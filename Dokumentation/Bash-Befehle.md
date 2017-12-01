@@ -1,5 +1,17 @@
 # Bash-Befehle #
 
+- [Bash-Befehle](#bash-befehle)
+    - [Wichtige Befehle](#wichtige-befehle)
+        - [ps](#ps)
+        - [ls](#ls)
+        - [less](#less)
+            - [Bsp.: Benutzer Anzeigen](#bsp-benutzer-anzeigen)
+            - [Bsp.: Passwörter der Benutzer](#bsp-passw%C3%B6rter-der-benutzer)
+        - [passwd](#passwd)
+        - [sudo](#sudo)
+        - [Jobs](#jobs)
+            - [Bsp.: ping &lt;url>](#bsp-ping-lturl)
+
 ## Wichtige Befehle ##
 
 |Befehl|Parameter |Erklärung|

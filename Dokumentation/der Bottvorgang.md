@@ -1,5 +1,12 @@
 # Der Bootvorgang #
 
+- [Der Bootvorgang](#der-bootvorgang)
+    - [dmesg](#dmesg)
+    - [Verzeichnis /boot](#verzeichnis-boot)
+    - [Logfiles](#logfiles)
+        - [syslogd](#syslogd)
+        - [journalctl](#journalctl)
+
 ## dmesg ##
 
 - Auslesen des Logs vom Bootvorgang

@@ -1,5 +1,12 @@
 # Aufbau des Betriebssystems #
 
+- [Aufbau des Betriebssystems](#aufbau-des-betriebssystems)
+    - [Kernel (Hauptbestandteil)](#kernel-hauptbestandteil)
+        - [Sheduler](#sheduler)
+        - [Verwaltung Angeschlossener Hardware](#verwaltung-angeschlossener-hardware)
+        - [Init-Prozess](#init-prozess)
+        - [Shells](#shells)
+
 ## Kernel (Hauptbestandteil) ##
 
 - Programme können nur quasi-Parrallel ausgeführt werden

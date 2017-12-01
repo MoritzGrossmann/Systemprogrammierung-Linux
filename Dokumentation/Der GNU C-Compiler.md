@@ -1,5 +1,14 @@
 # Der GNU C-Compiler #
 
+- [Der GNU C-Compiler](#der-gnu-c-compiler)
+    - [Beispiel](#beispiel)
+    - [C-Standard festlegen](#c-standard-festlegen)
+        - [ANSI Standard(C90)](#ansi-standardc90)
+        - [ISO-Standard(C99)](#iso-standardc99)
+    - [Dateitypen](#dateitypen)
+    - [Auswahl einiger Schalter für gcc](#auswahl-einiger-schalter-f%C3%BCr-gcc)
+        - [Beispiel -D](#beispiel--d)
+
 - C-Compiler: cc (Alias für gcc)
 - C++-Compiler: c++ (Alias für g++)
 - C-Präprozessor: cpp

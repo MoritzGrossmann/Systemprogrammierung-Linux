@@ -1,5 +1,25 @@
 # Aufbau des Dateisystems #
 
+- [Aufbau des Dateisystems](#aufbau-des-dateisystems)
+    - [/bin](#bin)
+    - [/dev](#dev)
+        - [Bsp.: Festplatten](#bsp-festplatten)
+            - [Nach Pfad](#nach-pfad)
+            - [Nach UUID](#nach-uuid)
+    - [/etc](#etc)
+    - [/lib](#lib)
+    - [/mnt](#mnt)
+    - [/media](#media)
+    - [/proc](#proc)
+    - [/sbin](#sbin)
+    - [/usr](#usr)
+        - [/usr/share](#usrshare)
+        - [/usr/local](#usrlocal)
+    - [/run](#run)
+    - [/var](#var)
+    - [/sys](#sys)
+        - [/sys/module](#sysmodule)
+
 - ist fester BEstandteil jeden Kernels
 - ```/``` ist Rootverzeichnis
 

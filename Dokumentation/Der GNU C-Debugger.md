@@ -1,5 +1,17 @@
 # Der GNU C-Debugger #
 
+- [Der GNU C-Debugger](#der-gnu-c-debugger)
+    - [Grundlegende Kommandos](#grundlegende-kommandos)
+    - [Weitere Kommandos](#weitere-kommandos)
+        - [Breakpoints](#breakpoints)
+            - [Setzen eines BReakpoints](#setzen-eines-breakpoints)
+            - [Anzeigen der BReakpoints](#anzeigen-der-breakpoints)
+            - [Löschen eines Breakpoints](#l%C3%B6schen-eines-breakpoints)
+        - [Ablaufen des Programmes bis zum nächsten Breakpoint](#ablaufen-des-programmes-bis-zum-n%C3%A4chsten-breakpoint)
+        - [Überwachen von Ausdrücken](#%C3%BCberwachen-von-ausdr%C3%BCcken)
+        - [Inspektion von Speicher](#inspektion-von-speicher)
+        - [Inspektion eines Core-dump](#inspektion-eines-core-dump)
+
 ## Grundlegende Kommandos ##
 
 Der GNU C-Debugger akzeptiert eine Vielzahl verschiedener Kommandos. So kann man beispielsweise eine Programm-Datei laden. 

@@ -45,6 +45,14 @@
             - [Beenden ohne Aufräumen](#beenden-ohne-aufr%C3%A4umen)
             - [Zusätzliches Aufräumen](#zus%C3%A4tzliches-aufr%C3%A4umen)
         - [Umgebungsvariablen](#umgebungsvariablen)
+        - [7.5 Ressourcenbeschränkungen](#75-ressourcenbeschr%C3%A4nkungen)
+            - [Einige Limits und deren Bedeutung](#einige-limits-und-deren-bedeutung)
+            - [Beispiel](#beispiel)
+        - [7.6 Ressourcenverbrauch](#76-ressourcenverbrauch)
+        - [7.7 Identifikation von Prozessen](#77-identifikation-von-prozessen)
+            - [Abfrage von PID und PPID](#abfrage-von-pid-und-ppid)
+            - [Abfrage der realen User- und Group-ID](#abfrage-der-realen-user--und-group-id)
+            - [Abfrage der effektiven User- und Group-ID](#abfrage-der-effektiven-user--und-group-id)
 
 ## Öffnen von Dateien mit C-Standard ##
 
@@ -432,33 +440,33 @@ ssize_t write(int fd, void *buffer, size_t bytes);
 
 ### Filedeskriptoren in Prozesstabelle ###
 
-| fd | Flags  | Zeiger|
-|----|--------|-------|
-| 0  | RDONLY |       |
-| 1  | WRONLY |       |
-| 2  | WRONLY |       |
-| 3  |        |       | 
-| 4  |        |       |
+| fd  | Flags  | Zeiger |
+| --- | ------ | ------ |
+| 0   | RDONLY |        |
+| 1   | WRONLY |        |
+| 2   | WRONLY |        |
+| 3   |        |        |
+| 4   |        |        |
 
 **Dateitabelle**
 
-|...|
-|---|
-|filestatus |
+| ...                          |
+| ---------------------------- |
+| filestatus                   |
 | Position Lese-Schreibzeichen |
-| V-node zeiger |
-|...|
-| status flags |
+| V-node zeiger                |
+| ...                          |
+| status flags                 |
 | Position Lese-Schreibzeichen |
-| V-node zeiger |
+| V-node zeiger                |
 
 **V-node Tabelle**
 
-|...|
-|---|
-|v-node Info |
-|i-node Info |
-||
+| ...         |
+| ----------- |
+| v-node Info |
+| i-node Info |
+|             |
 
 > Ein weiterer Prozess öffnet die gleiche Datei mit einem neuen Schreib-Lesezeiger
 
@@ -481,9 +489,9 @@ off_t lseek(int fd, off_t offset, int woher);
 //Rückgabewert ist die neue Position des Zeigers oder -1 im Fehlerfall
 ```
 
-| Parameter | Erklärung                                                         |
-|-----------|-------------------------------------------------------------------|
-| offset    | legt die Byteanzahl fest, u die verschoben werden soll            |
+| Parameter | Erklärung                                                                                               |
+| --------- | ------------------------------------------------------------------------------------------------------- |
+| offset    | legt die Byteanzahl fest, u die verschoben werden soll                                                  |
 | woher     | legt fest, von wo die Verschiebung statt findet, also Richtung. Dafür kennt l_seek 3 verschiedene Werte |
   
 
@@ -1029,3 +1037,146 @@ Durch Deklaration der globalen Variablen
 extern char **environ; 
 ```
 kann auf die Umgebungsvariablen zugegriffen werden. Die Variablenbelegnung sind Strings der Form name=Wert.
+
+### 7.5 Ressourcenbeschränkungen ###
+
+Die Ressourcenvergabe an Prozesse (Speichergröße, CPU-Zeit, Anzahl geöffneter Dateien, Stack-Größe und weiteres) durch dne Kernel ist beschränkt.
+
+Diese Schranken (limits) sind konfigurierbar. In gewissen Bereich kann ein PRozess diese Schranken selbst frei wählen.
+
+Zum Erfragen und Setzen von Ressourcenbeschränkungen dienen:
+
+```c
+#include <sys/resource.h>
+
+int getrlimit(int resource, struct rlimit *ptr);
+
+int setrlimit(int resource, const struct rlimit *ptr);
+```
+
+Rückgabe 0 bei Erfolg und verschieden von 0 Fehler.
+
+Die Structur rlimit:
+
+```c
+struct rlimit {
+    rlim_t rlim_cur; //Aktuelles Limit
+    rlim_t rlim_max; //Maximaler Wert
+}
+
+//Konstante Für Unbeschränkt
+RLIM_INFINITY //(-1)
+// Drück aus, dass es keine Beschränkung für die Ressource gibt
+```
+
+Ein Prozess darf seine Ressourcen frei wähen, solange diese kleiner gleich den Maximal-Werten (rlim_max) ist.
+
+Außerdem darf ein Prozess den Maximal Gültigen Wert für sich Verringern. Nur der Superuser darf den manimalen Wert für den Ressourcenbedarf erhöhen.
+
+Praktische Relevanz hat dies beim Testen von Software.
+
+#### Einige Limits und deren Bedeutung ####
+
+| Limit         | Bedeutung                                        |
+| ------------- | ------------------------------------------------ |
+| RLIMIT_CORE   | Beschränkung der Größe in Core-Files             |
+| RLIMIT_CPU    | CPU-Zeit je Prozess                              |
+| RLIMIT_DATA   | Beschränkung der Datensegmentgröße               |
+| RLIMIT_FSIZE  | Beschränkung der Dateigröße                      |
+| RLIMIT_NOFILE | Anzahl der geöffneten Dateien                    |
+| RLIMIT_NICE   | Beschränkung des nice-Wertes                     |
+| RLIMIT_NPROC  | Beschränkung der Prozessanzahl inklusive Threads |
+| RLIMIT_STACK  | Beschränkug der Stack-Größe                      |
+| RLIMIT_AS     | Beschränkung der Größe des Addressraumes         |
+
+#### Beispiel ####
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/resource.h>
+
+int main(int argc, char **argv) {
+
+    struct rlimit limit;
+    if ( getrlimit(RLIMIT_CORE, &limit)) perror ("getrlimit");
+
+    printf("CORE-FILE: %d (cur), %d (max)\n", limit.rlim_cur, limit.rlim_max);
+
+    if ( getrlimit(RLIMIT_CPU, &limit)) perror ("getrlimit");
+
+    printf("CPU: %d (cur), %d (max)\n", limit.rlim_cur, limit.rlim_max);
+
+    return EXIT_SUCCESS;
+}
+```
+
+### 7.6 Ressourcenverbrauch ###
+
+Der aktuelle Ressourcenverbrauch eines Prozesses kann mit: getrusage(..) abgefragt werden.
+
+```c
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <unistd.h>
+
+int getrusage(int whom, struct rusage *usage);
+```
+
+Rückgabe 0 bei Erfolg, -1 bei Fehler.
+
+Der Erste Parameter entscheidet, von wem man den Verbrauch erfragen möchte. Das kann eine von 3 Konstanten sein:
+
+| Konstante       | Erklärung                                   |
+| --------------- | ------------------------------------------- |
+| RUSAGE_SELF     | Prozes selbst inkl. Threads                 |
+| RUSAGE_CHILDREN | Ressourcenverbrauch aller Kindprozesse      |
+| RUSAGE_THREAD   | Ressourcenverbrauch des aufrufenden Threads |
+
+### 7.7 Identifikation von Prozessen ###
+
+Intern wird jeder PRozess durch eine Nummer repräsentiert, die Prozess-ID (PID). Der Kernel stellt sicher, dass es keine 2 PRozesse mit gleicher PID gibt. 
+
+Bis auf wenige Ausnahmen hat jeder Prozess ein Eltern-Prozess, welcher den Start veranlasst hat.
+
+Um die ELtern-Kind beziehungen herstellen zu können verwendet der KErnel zu jedem PRozess die parent process ID (PPID).
+
+Beide Angaben zusammen ergeben eine Baumstruktur => Prozesshierachie.
+
+Neben diesen Identifikationsnummern benötigen Prozesse noch Berechtigungen, diese haften unter UNIX an Benutzern und Gruppen. Entscheidend für die Rechte, mit denen ein Prozess Operationen ausführt, sind **effektive** User- und Group-ID.
+
+#### Abfrage von PID und PPID 
+
+```c
+#include <sys/types.h>
+#include <unistd.h>
+
+pid_t getpid(void);
+pid_t getppid(void);
+```
+
+Beide Funktionen sind stehts erfolgreich.
+
+#### Abfrage der realen User- und Group-ID
+
+```c
+#include <sys/types.h>
+#include <unistd.h>
+
+uid_t getuid(void);
+gid_t getgid(void);
+```
+
+Beide Funktionen sind stehts erfolgreich.
+
+#### Abfrage der effektiven User- und Group-ID
+
+```c
+#include <sys/types.h>
+#include <unistd.h>
+
+uid_t geteuid(void);
+gid_t getegid(void);
+```
+
+Beide Funktionen sind stehts erfolgreich.

@@ -48,28 +48,33 @@
 
 - listet laufende Prozesse
 
-> **moritz@Latitude-E5520 ~ $** ps</br>
-> PID TTY          TIME CMD</br>
-> 11983 pts/0    00:00:00 bash</br>
-> 13709 pts/0    00:00:00 ps</br>
+```bash
+moritz@Latitude-E5520 ~ $ ps
+PID TTY          TIME CMD
+11983 pts/0    00:00:00 bash
+13709 pts/0    00:00:00 ps
+```
 
-> **moritz@Latitude-E5520 ~ $** ps -a</br>
-> PID TTY          TIME CMD</br>
-> 13211 tty1     00:00:00 bash</br>
-> 13733 pts/0    00:00:00</br>
+```bash
+moritz@Latitude-E5520 ~ $ ps -a
+PID TTY          TIME CMD
+13211 tty1     00:00:00 bash
+13733 pts/0    00:00:00
+```
 
-> **moritz@Latitude-E5520 ~ $** ps -aux</br>
-> USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</br>
-> root         1  0.0  0.0 119984  6184 ?        Ss   09:41   0:01 /sbin/init splash</br>
-> root         2  0.0  0.0      0     0 ?        S    09:41   0:00 [kthreadd]</br>
-> ...</br>
-> root     13264  0.0  0.0  17492  1820 tty3     Ss+  10:10   0:00 /sbin/agetty --noclear tty3 linux</br>
-> root     13268  0.0  0.0  17492  1828 tty4     Ss+  10:10   0:00 /sbin/agetty --noclear tty4 linux</br>
-> root     13271  0.0  0.0  17492  1824 tty5     Ss+  10:10   0:00 /sbin/agetty --noclear tty5 linux</br>
-> moritz   13378  6.8  2.0 3374780 168872 ?      Sl   10:11   0:18 /home/moritz/.dropbox-dist/dropbox-lnx.x86_64-36.4.22/dropbox</br>
-> moritz   13582 11.6  2.4 3877292 194824 ?      SLl  10:13   0:17 evolution</br>
-> moritz   13778  0.0  0.0  38992  3496 pts/0    R+   10:15   0:00 ps -aux</br>
-
+```bash
+moritz@Latitude-E5520 ~ $ ps -aux
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root         1  0.0  0.0 119984  6184 ?        Ss   09:41   0:01 /sbin/init splash
+root         2  0.0  0.0      0     0 ?        S    09:41   0:00 [kthreadd]
+..
+root     13264  0.0  0.0  17492  1820 tty3     Ss+  10:10   0:00 /sbin/agetty --noclear tty3 linux
+root     13268  0.0  0.0  17492  1828 tty4     Ss+  10:10   0:00 /sbin/agetty --noclear tty4 linux
+root     13271  0.0  0.0  17492  1824 tty5     Ss+  10:10   0:00 /sbin/agetty --noclear tty5 linux
+moritz   13378  6.8  2.0 3374780 168872 ?      Sl   10:11   0:18 /home/moritz/.dropbox-dist/dropbox-lnx.x86_64-36.4.22/dropbox
+moritz   13582 11.6  2.4 3877292 194824 ?      SLl  10:13   0:17 evolution
+moritz   13778  0.0  0.0  38992  3496 pts/0    R+   10:15   0:00 ps -aux
+```
 - Aktuelles Dateisystem: btrfs -> "Better oder Butter"
 - **pstree** listet Prozesse in Baumstruktur auf
 

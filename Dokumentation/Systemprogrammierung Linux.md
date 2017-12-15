@@ -24,7 +24,7 @@
         - [Schreib-Lesezeiger positionieren](#schreib-lesezeiger-positionieren)
             - [Positionierung im stdid](#positionierung-im-stdid)
             - [Duplizieren von Filedeskriptoren](#duplizieren-von-filedeskriptoren)
-            - [Letzten 20 Bytes einer Datei in sdtout ausgeben](#letzten-20-bytes-einer-datei-in-sdtout-ausgeben)
+            - [Letzten 20 Bytes einer Datei in stdout ausgeben](#letzten-20-bytes-einer-datei-in-stdout-ausgeben)
         - [Kontrolle der Eigenschaften einer Datei](#kontrolle-der-eigenschaften-einer-datei)
         - [Filezeiger](#filezeiger)
     - [Arbeiten mit Dateien und Verzeichnissen](#arbeiten-mit-dateien-und-verzeichnissen)
@@ -38,13 +38,13 @@
         - [Gerätedateien](#ger%C3%A4tedateien)
             - [Spezielle Gerätedateien](#spezielle-ger%C3%A4tedateien)
         - [Puffercache](#puffercache)
-    - [Prozesse unter Linux](#prozesse-unter-linux)
-        - [Start eines Prozesses](#start-eines-prozesses)
-        - [Beenden eines Prozesses](#beenden-eines-prozesses)
+    - [7. Prozesse unter Linux](#7-prozesse-unter-linux)
+        - [7.1 Start eines Prozesses](#71-start-eines-prozesses)
+        - [7.2 Beenden eines Prozesses](#72-beenden-eines-prozesses)
             - [Exit-Status eines Prozesses](#exit-status-eines-prozesses)
             - [Beenden ohne Aufräumen](#beenden-ohne-aufr%C3%A4umen)
             - [Zusätzliches Aufräumen](#zus%C3%A4tzliches-aufr%C3%A4umen)
-        - [Umgebungsvariablen](#umgebungsvariablen)
+        - [7.3 Umgebungsvariablen](#73-umgebungsvariablen)
         - [7.5 Ressourcenbeschränkungen](#75-ressourcenbeschr%C3%A4nkungen)
             - [Einige Limits und deren Bedeutung](#einige-limits-und-deren-bedeutung)
             - [Beispiel](#beispiel)
@@ -53,6 +53,14 @@
             - [Abfrage von PID und PPID](#abfrage-von-pid-und-ppid)
             - [Abfrage der realen User- und Group-ID](#abfrage-der-realen-user--und-group-id)
             - [Abfrage der effektiven User- und Group-ID](#abfrage-der-effektiven-user--und-group-id)
+        - [7.8 Prozesse erzeugen](#78-prozesse-erzeugen)
+        - [7.9 Auf Beendigung eines Prozesses warten](#79-auf-beendigung-eines-prozesses-warten)
+            - [Verweiste Kindprozesse](#verweiste-kindprozesse)
+            - [Zombieprozesse](#zombieprozesse)
+                - [Verhindern von Zombies](#verhindern-von-zombies)
+            - [Informationen über benutzte Ressourcen](#informationen-%C3%BCber-benutzte-ressourcen)
+        - [7.10 Synchronisation](#710-synchronisation)
+        - [7.11 Systemruf exec](#711-systemruf-exec)
 
 ## Öffnen von Dateien mit C-Standard ##
 
@@ -97,7 +105,7 @@ Die Funktion perror(...) erzeugt eine Fehlermeldung, entsprechend des Wertes von
 Häufig wird perror(...) der Name der Funktion übergeben, in der der Fehler augetreten ist.
 
 ```c
-#include <sdtio.h>
+#include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
@@ -120,7 +128,7 @@ char *strerror(int errnum);
 liefert entsprechenden Zeiger auf die Fehlermeldung. Ist die Fehlernummer unbekannt wird "Unknown error nnn" zurückgelifert
 
 ```c
-#include <sdtio.h>
+#include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
 
@@ -594,7 +602,7 @@ int main (int argc, char **argv)
 }
 ```
 
-#### Letzten 20 Bytes einer Datei in sdtout ausgeben ####
+#### Letzten 20 Bytes einer Datei in stdout ausgeben ####
 
 ```c
 #include <stdio.h>
@@ -976,12 +984,12 @@ Dem gegenüber bezieht sich fsync(...) nur auf eine Datei und veranlasst auch nu
 
 Physikalische Schreibprozesse werden von einem Hintergrundprozess etwas alle 30 Sekunden automatisch ausgeführt.
 
-## Prozesse unter Linux ##
+## 7. Prozesse unter Linux ##
 
 Ein laufendes Programm in einem Multitasking-Betriebssystem wird Prozess genannt.  
 Jeder Prozess läuft in einer Umgebung (Environment), er benötigt Seicher, benötigt Zugriff auf Ressourcen, das Dateisystem, externe Geräte, Treiber etc. Auch Treiber sind Programme. Es muss auch geregelt sein, wie Prozesse, zum Zwecke des Datenaustausches oder spezieller Benachrichtigungen, miteinander kommunizieren können.
 
-### Start eines Prozesses ###
+### 7.1 Start eines Prozesses ###
 
 ```c
 
@@ -991,7 +999,7 @@ int main(int argc, char **argv);
 
 Das Array argv enthält an der Stelle argv[argc] einen NULL-Pointer. (POSIX /C-Std).
 
-### Beenden eines Prozesses ###
+### 7.2 Beenden eines Prozesses ###
 
 Linux unterscheidet zwei Arten, wie ein Prozess beendet werden kann.  
 Normalerweise endet ein Prozess mit dem Ende der main-Funktion und entsprechenden Rückgabewert.  
@@ -1029,7 +1037,7 @@ int atexit(void (*function)(void))
 
 Im Fehlerfall liefert atexit(...) einen Wert ungleich 0
 
-### Umgebungsvariablen ###
+### 7.3 Umgebungsvariablen ###
 
 Die Liste der Umgebungsvariablen ist, wie  die Argumentliste (argv), ein Array aus Zeichenketten. Diese Nullterminiert, wie die Liste selbst.  
 Durch Deklaration der globalen Variablen 
@@ -1135,11 +1143,11 @@ Der Erste Parameter entscheidet, von wem man den Verbrauch erfragen möchte. Das
 
 ### 7.7 Identifikation von Prozessen ###
 
-Intern wird jeder PRozess durch eine Nummer repräsentiert, die Prozess-ID (PID). Der Kernel stellt sicher, dass es keine 2 PRozesse mit gleicher PID gibt. 
+Intern wird jeder Prozess durch eine Nummer repräsentiert, die Prozess-ID (PID). Der Kernel stellt sicher, dass es keine 2 Prozesse mit gleicher PID gibt. 
 
 Bis auf wenige Ausnahmen hat jeder Prozess ein Eltern-Prozess, welcher den Start veranlasst hat.
 
-Um die ELtern-Kind beziehungen herstellen zu können verwendet der KErnel zu jedem PRozess die parent process ID (PPID).
+Um die Eltern-Kind beziehungen herstellen zu können verwendet der Kernel zu jedem Prozess die parent process ID (PPID).
 
 Beide Angaben zusammen ergeben eine Baumstruktur => Prozesshierachie.
 
@@ -1180,3 +1188,215 @@ gid_t getegid(void);
 ```
 
 Beide Funktionen sind stehts erfolgreich.
+
+### 7.8 Prozesse erzeugen ###
+
+Will man unter UNIX Prozesse ausneinem laufenden Programm heraus erzeugen nutzt man die Funktion fork();
+
+```c
+#include <sys/types.h>
+#include <unistd.h>
+
+pid_t fork(void);
+```
+Rückgabe: (im Elternprozess) die PID des neuen Prozesses, (im Kindprozess) die 0, bei Fehler -1.  
+Der Kernel erzeugt bei fork() eine Kopie des aktuellen Prozesses und ordnet dieser den originalprozess als Elternprozess zu. Durch den Rückgabewert können beide unterschieden werden.
+
+> Bemerkung: Die Rückgaberegelung als Unterscheidung ist Sinnvoll, da der Kindprozess ohnehin die PID des Elternprozesses mit get_PPID() abfragen kann.
+
+Typisches Scenario
+
+```c
+int childID = fork();
+
+if (childID < 0)
+{
+    perror("could not fork")
+}
+else if (childID) 
+{
+    // Elternprozess
+} 
+else
+{
+    // childID = 0
+    // -> Kindprozess
+}
+```
+
+
+
+> Beachte: Um Zombieprozesse zu vermeiden, muss auf deren Beendigung gewartet werden!
+
+**Beispiel**
+
+```c
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+int main (int argc, char **argv)
+{
+    pid_t parent, self, pid;
+
+    if ((pid = fork()) < 0) perror("could not fork");
+    else if (pid) // Elternprozess
+    {
+        printf("Elternprozess:\t");
+        parent = getppid();
+        self = getpid();
+
+        printf("ppid %d, pid %d, kind: %d\n", parent, self, pid);
+
+        // Um Zombies zu verhindern
+
+        wait();
+
+    } else {
+        printf("Kindprozess:\t");
+        parent = getppid();
+        self = getpid();
+        
+        printf("ppid %d, pid %d\n", parent, self);
+    }
+
+    return EXIT_SUCCESS;
+}
+```
+
+Einige Kernel setzen bei fork() auf copy-on-write (cow), eine Technik, die den Kindprozess den Speicher des Elternprozesses mitbenutzen lässt, solange dieser nur daraus ließt. Eine echte Kopie wird erst erzeugt, wenn das Kind in den Speicher schreibt. Das ist besondern dann nützlich, wenn auf fork() der Systemruf exec(..) folgt. In dem Fall steht vfork() zur Verfügung.
+
+> Bemerkung: Bei vfork() ist garantiert, dass der Kindprozess vor dem Elternprozess ausgefhrt wird
+
+Linux unterstützt zudem noch den Systemruf clone(), der Ebenfalls eine Prozesskopie erzeugt, wobei die Art und Weise der Prozesskopie einstellbar ist.
+
+Bildes die Grundlage für weitere Operationen mit leichtgewichtigen Prozessen (Threads)
+
+### 7.9 Auf Beendigung eines Prozesses warten ###
+
+Wie jedes Programm kann ein Prozess normal (mit Exit-Status) beendet oder abgebrochen werden. 
+
+Elternprozesse können im Normalfall den Exit-Status eines Kindes mit wait() oder waitpid(..) abfragen.
+
+```c
+#include <sys/types.h>
+#include <wait.h>
+
+pid_t wait(int *status);
+
+pid_t waitpid(pid_t pid, int *status, int opt);
+```
+
+Beide Funktionen liefern bei Erfolg die ProzessID. Im Falle eines Fehlers wird -1 oder 0 (falls kein kind aktiv ist/war) zurückgegeben und WNOHANG
+
+Die Funktion wait() wartet auf Beendigung eines beliebigen Kind-Prozesses, während waitpid(..) auf das Ende eines bestimmten Kindprozesses waren kann.
+
+Beide Funktionen blockieren, bei waitpid(..) kann das mit einer Option ausgesetzt werden. 
+
+Zur Überprüfung des Exit-Status gibt es folgende Makros:
+
+| Marko                | Erklärung                                                                                       |
+| -------------------- | ----------------------------------------------------------------------------------------------- |
+| WIFEXITED(status)    | Normal beendet                                                                                  |
+| WEXITSTATUS(status)  | Liefert Exitstatus unterste 8 Bit                                                               |
+| WIFSIGNALED(status)  | Durch Signal beendet (z.B. abort)                                                               |
+| WTERMSIG(status)     | Signalnummer (nur bei WIFSIGNALED)                                                              |
+| WCOREDUMP(status)    | Prüft, ob ein Coredump erzeugt wurde (nur bei WIFSIGNALED und nicht auf jedem System verfügbar) |
+| WIFSTOPPD(status)    | Kindprozess wurde durch Signal gestoppt                                                         |
+| WSTOPSIG(status)     | Lifert Signal, dass zum Stop führte                                                             |
+| WIFCONTINUED(status) | Kindprozess wurde fortgesetzt                                                                   |
+
+#### Verweiste Kindprozesse ####
+
+Endet ein Eltternprozess, ehe sich alle seine Kinder beenden so wird der init-Prozess neuer ELternprozess aller verweisten Kinder. So ist gesichert, dass jeder Prozess einen Elternprozess hat. 
+
+#### Zombieprozesse ####
+
+Endet ein Kindprozess, ohne dass der Elternprozess auf diesen gewartet hat, so merkt sich der Kernel einige Informationen (u.a. PID, exit-status, verbrauchte CPU-Zeit) in seiner Prozesstabelle, bis das der Eltenrprozess wait() oder waitpid(..) aufruft und die Infos abfragt, bzw. damit der Elternprozess das zu einem späteren Zeitpunkt tuten kann.
+
+Den status des Prozesses setzt der Kernel dabei auf Z wie Zombie.
+
+```c
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 10
+
+int main (int argc, char **argv)
+{
+    int num = 0;
+
+    while(num++ < MAX) {
+        pid_t pid = fork();
+
+        if (pid < 0) perror ("could not fork");
+        else if (pid == 0) {
+            // Kindeprozess
+            printf("Kind nummer %d gestartet\n", num);
+            sleep(2);
+            printf("Kind nummer %d beenden\n", num);
+            exit(EXIT_SUCCESS);
+        }
+    }
+
+    int status;
+    while (num-- > 0) 
+    {
+        wait(&status);
+    }
+
+    printf("Elternprozes beendet\n");
+
+    return EXIT_SUCCESS;
+}
+```
+
+##### Verhindern von Zombies #####
+
+Zombies können vermieden werden, indem der ELternprozess auf seine Kinder wartet.
+
+Alternativ:
+
+EP -> wartet nur kurz auf Beenden von Kindprozess  
+|  
+|  
+KP -> forkt ein zweites mal und beendet sich  
+|  
+|  
+Enkel -> init prozess wird neuer Elternprozess
+
+#### Informationen über benutzte Ressourcen ####
+
+```c
+#include <sys/types.h>
+#include <wait.h>
+
+pid_t wait3(int *status, int opt, struct rusage *usage);
+
+pit_t wait4(pid_t pid, int *status, int opt, struct rusage *usage);
+```
+
+### 7.10 Synchronisation ###
+
+Wenn mehrere Prozesse gemeinsam an einer Lösung arbeiten, so benötigt man i.d.R. eine Möglichkeit, diese untereinander zu synchronisieren, damit sie geordnet ablaufen können.
+
+Für einfach Synchronisationsaufgaben können Signale verwendet werden, die es ermöglichen, dass ein Prozess auf ein eingehendes Signal eines anderen Prozesses wartet, bzw. einem anderen ein spezielles Signal zukommen lässt.
+
+### 7.11 Systemruf exec ###
+
+Nach dem Erzeugen einer Prozesskopie mittels (v)fork() läuft im Kindprozess das gleiche Programm, wie im Elternprozess, weiter ab.
+
+Die Funktion exec() macht es möglich, das abzuarbeitende Programm im laufenden Prozess auszutauschen. Dabei wird das neue Programm von Anfang an (also mit main()) begonnen.
+
+```c
+#include <unistd.h>
+
+int exec(const char *pfad, *pfad, const char *arg0, ... /* NULL */);
+
+int execlp(const char *datei, const char *arg0, ... /* NULL */);
+
+int execle();
+```

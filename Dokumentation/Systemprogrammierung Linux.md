@@ -61,6 +61,7 @@
             - [Informationen über benutzte Ressourcen](#informationen-%C3%BCber-benutzte-ressourcen)
         - [7.10 Synchronisation](#710-synchronisation)
         - [7.11 Systemruf exec](#711-systemruf-exec)
+        - [8.4 Das neue Signalkonzept](#84-das-neue-signalkonzept)
 
 ## Öffnen von Dateien mit C-Standard ##
 
@@ -1398,5 +1399,113 @@ int exec(const char *pfad, *pfad, const char *arg0, ... /* NULL */);
 
 int execlp(const char *datei, const char *arg0, ... /* NULL */);
 
-int execle();
+int execle(const char *pfad, const char *arg0, ... /* NULL */);
+```
+
+### 8.4 Das neue Signalkonzept ###
+
+**Signalmengen (~masken)**
+
+Datentyp: sigset_t
+verwendet für jedes Sinal 1 Bit
+
+wird verwendet, um eine Menge von Signalen, während der Abarbeitung eines benutzerdef. Handlers, zu blockieren. Die Nummer des Bits ist die Signalnummer -1, da kein Signal die nummer 0 hat. 
+
+```c
+#include <signal.c>
+
+int sigemptyset(sigset_t *set);
+
+int sigfillset(sigset_t *set);
+
+int sigaddset(sigset_t *set, int signalnr);
+
+int sigdelset(sigset_t *set, int signalnr);
+
+int sigismember(const sigset_t *set, int signalnr);
+```
+
+Bis auf sigismember(..), die entweder 1 (true) oder 0 (false) zurückgibt, liefern alle Funktionen im Erfolgsfall 0 zurück und ansonsten -1.
+
+sigfillset, sigemptyset: initialisieren einer signalmenge mit Nullen (leer) oder Einsen (alle).
+
+sigaddset, sigdelset: schalten eintzelne Bits an oder aus.
+
+mit sigismember kann geprüft werden, ob ein Signal in den gegebenen Menge vorhanden ist oder nicht.
+
+**Signalhandler einrichten**
+
+Einrichten/Erfragen eines Signalhandlers mit Funktionen: 
+
+```c
+sigaction(..);
+```
+
+Anders als bei früheren Implementierungen bleibt ein mit sigaction(..) installierter Signalhandler so lange installiert, bis er explizit wieder geändert wird.
+
+Tritt das gleiche Signal währen der Ausführung des Handlers erneut auf, wird es blockiert. 
+
+```c
+#include <signal.h>
+
+int sigaction(int signr, const struct sigaction *act, struct sigaction *old_acc);
+```
+
+Bei Erfolg liefert sigaction(..) den wert 0, und im Fehlerfall -1. Für die letzten beiden Parameter kann NULL angegeben werden, was bedeutet, dass man nur einen Handler abfragen oder nur setzen oder beides gleichzeitig machen möchte. 
+
+Die Datenstructur sigaction wird verwendet um neben dem Signalhandler die zu blockierende Signalmenge und Flags zu blockieren. 
+
+```c
+struct sigaction {
+    /*Adresse des Signalhandlers*/
+    void (*sa_handler)(int);
+
+    /*Zu blockierende Signale*/
+    sigset_t sa_mask;
+
+    /*Optionen*/
+    int sa_flags;
+};
+```
+
+Optionen:
+
+| Option       | Erklärung                                                                                                                                                                                |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SA_NOCLOSTOP | Signal SIGCHILD. wird nur ausgelößt, wenn sich Kindprozess beendet, nicht jedoch bei STOP                                                                                                |
+| SA_NOCLDWAIT | Signal SIGCHILD. vermeidet Zombies. Ruft Elternprozess danach wait(..) auf, kehrt es erst zurück, wenn alle Kinder beendet sind                                                          |
+| SA_RESTART   | Blockierende Systemaufrufe, die durch ein auftretendes Signal unterbrochen wurden, werden automatisch neu gestartet. Ist sas Flag nixht gesetzt, schlägt der Systemaufruf mit EINTR Fehl |
+| SA_NODEFER   | Während der Ausführung eines Handlers wird das wird das selbe Signal nicht automatisch blockiert                                                                                         |
+| SA_RESETHAND | Bei eintritt in die Routine wird der Defaulthandler wieder eingestellt | 
+
+**Synonyme unter Linux**
+
+SA_NODEFER = SA_NOMASK
+SA_RESETHAND = SA_ONESHOT
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <signal.h>
+
+static int num;
+
+void handler(int sig) 
+{
+    printf("%s %d", strsignal(sig), ++num);
+}
+
+int main(int argc, char **argv)
+{
+    sruct sigaction act = {handler, 0};
+
+    if (sigaction(SIGUSR1, &act, NULL) == -1) perror("sigaction");
+
+    while (1) {
+        sleep(1)
+    }
+
+    return EXIT_SUCCESS;
+}
 ```

@@ -62,6 +62,13 @@
         - [7.10 Synchronisation](#710-synchronisation)
         - [7.11 Systemruf exec](#711-systemruf-exec)
         - [8.4 Das neue Signalkonzept](#84-das-neue-signalkonzept)
+    - [11. Pipes und FIFOs](#11-pipes-und-fifos)
+        - [11.1 Pipes](#111-pipes)
+            - [Einrichten einer Pipe](#einrichten-einer-pipe)
+            - [Verknüpfung von Pipe mit Standardeingabe](#verkn%C3%BCpfung-von-pipe-mit-standardeingabe)
+            - [Pipe zu einem anderen Programm](#pipe-zu-einem-anderen-programm)
+        - [11.2 Benannte Pipes (FIFOs)](#112-benannte-pipes-fifos)
+            - [Kreieren einer benannten Pipe](#kreieren-einer-benannten-pipe)
 
 ## Öffnen von Dateien mit C-Standard ##
 
@@ -1476,7 +1483,7 @@ Optionen:
 | SA_NOCLDWAIT | Signal SIGCHILD. vermeidet Zombies. Ruft Elternprozess danach wait(..) auf, kehrt es erst zurück, wenn alle Kinder beendet sind                                                          |
 | SA_RESTART   | Blockierende Systemaufrufe, die durch ein auftretendes Signal unterbrochen wurden, werden automatisch neu gestartet. Ist sas Flag nixht gesetzt, schlägt der Systemaufruf mit EINTR Fehl |
 | SA_NODEFER   | Während der Ausführung eines Handlers wird das wird das selbe Signal nicht automatisch blockiert                                                                                         |
-| SA_RESETHAND | Bei eintritt in die Routine wird der Defaulthandler wieder eingestellt | 
+| SA_RESETHAND | Bei eintritt in die Routine wird der Defaulthandler wieder eingestellt                                                                                                                   |
 
 **Synonyme unter Linux**
 
@@ -1509,3 +1516,239 @@ int main(int argc, char **argv)
     return EXIT_SUCCESS;
 }
 ```
+
+**Signalmaske abfragen**
+
+möchte man mehrere Signale für einen Prozess blockieren, zum Beispiel während der Abarbeitung eines krititschen Bereiches, kann man dies durch Angabe einer Signalmenge in einem einzigen Funktionsaufruf tun.
+
+```c
+#include <signal.h>
+
+int sigprocmask(int how, const sigset_t *set, sigset_t *dd_set);
+```
+
+wie bei sigaction(..) kann sigprocmask(..) nicht nur zum Ändern der Signalmaske eingesetzt werden, sondern auch zum Abfragen der aktuellen Maske (gesteuert wird übergabe von NULL-Zeiger). 
+
+Rückgabewerte sind im Erfolgsfall 0 und im Fehlerfall -1. 
+
+Für das erste Element sind drei Werte möglich:
+
+| Option      | Erklärung                                                       |
+| ----------- | --------------------------------------------------------------- |
+| SIG_BLOCK   | Signalmaske wird zur aktuellen Maske im Prozess hinzugefügt     |
+| SIG_UNBLOCK | Aus aktueller Signalmaske des Prozesses werden Signale entfernt |
+| SIG_SETMASK | Die aktuelle Signalmaske im Prozess wird überschrieben          |
+
+**Hängende Signale**
+
+Ankommende Signal, die von einem Prozess blockiert werden, bleiben hängen. Zur Abfragem wekche Signale gerade hängen, verwendet man sigpending(..).
+
+```c
+#include <signal.h>
+
+int sigpending(sigset_t *set);
+```
+
+Die Funktion liefert im Erfolgsfall 0, oder -1 bei Fehler.
+
+**Erlaubte Systemaufrufe**
+
+Während der Ausführung eines (benutzerdefinierten) Signalhandlers wird die eigentliche Ausführung des Programmes unterbochen. Nachdem das Signal bearbeitet wurde setzt der Prozess seine Ausführung an der entsprechenden Stelle fort.
+
+Was kann dabei zu Problemen führen?
+
+- eigene Programmierfehler durch verändern von Daten (Schleifenvariable) im Signalhandler
+- Aufruf nicht reentranter Systemfunktionen, z.B. gleichzeitig in Programm in Programm u. Signalhandler
+
+**Senden von Signalen**
+
+Um einen Prozess Signale senden zu können, muss man berechtigt sein. Berechtigt ist jeder sendende Prozess, der entweder Super-User-Rechte hat oder eine der User-Ids (real/effektiv) mit dem User-IDs des Empfänger-Prozess übereinstimmt.
+
+Zum senden stehen 2 Funktionen zur Verfügung
+
+```c
+#include <sys/types.h>
+#include <signal.h>
+
+int raise(int signr);
+
+int kill(pid_t pid, int signr);
+```
+
+Rücgabe 0 bei Erfolg, -1 bei Fehler.
+
+Mit der Funktion raise(..) sendet ein Prozess ein Signal an sich selbst. Sollte dabei ein Signalhandler aufgerufen werden, so kehrt raise(..) erst nach der Ausführung der Handler-Funktion zurück.
+
+Das senden eines Signals an einen anderen Prozess ermöglicht dagegen die Funktion kill(..).
+
+Es gibt 4 mögliche Angaben für pid:
+
+- pid > 0: Signal wird an Prozess mit pid geschickt
+- pid == 0: Signal wird allen Prozessen der gleichen Prozessgruppe geschickt.
+- pid == -1: Das Signal wird allen Prozessen (Broadcast) geschickt, soweit Berechtigungen ausreichend. Der aufrufende Prozess erhält das Signal selbst **nicht**.
+- pid < -1: Das Signal wird an Prozessgruppe (pid) geschickt
+
+An die Prozesse des Kernels selbst (swapper, init-Prozess) können keine Signale gesendet werden.
+
+Das Senden eines NULL-Signals an eine pid bewirkt, dass kill(..) eine Überprüfung durchführt, ob ein Signal an den gewünschten Empfänger geschickt werden kann.
+
+**Alarm.Timer einrichten**
+
+Ein Alarm-Timer ist ein zeitgesteuertes bzw. zeit-verzögertes Signal. der Alarm-Timer wird mit alarm(..) eingestellt, welches nach ablauf der angegebenen Zeit das Signal SIGALRM an sich selbst sendet. Wird das Signal nciht durch einen benutzerdef. Handler abgefangen oder ignoriert, so beendet sich der Prozess.
+
+```c
+#include <unistd.h>
+
+int alarm(unsigned int sekunden);
+```
+
+liefert die Anzahl Restsekunden zurück, die ein zuvor gestarteter Timer noch gehabt hat, oder 0, wenn zuvor kein Timer eingerichtet war. 
+
+Wird alarm(..) mit 0 sekunden aufgerufen, so wird ein aktuell laufender Timer abgebrochen und Restzeit ausgegeben.
+
+Alternativ drei Sstemtimer (ITIMER_REAL, ITMER_VIRTUAL, ITIMER_PROFE).
+
+mittels: getitimer(..) und setitimer(..) gesetzt bzw. überprüft werden. 
+
+ITIMER_REAL läuft in echtzeit ab und liefert bei Ablauf SIGALRM
+
+
+**Suspendieren eines Prozesses**
+
+Suspendieren bis bel. Signal eintrifft: pause();
+
+```c
+#include <unistd.h>
+
+int pause(void);
+```
+
+Die Funktion kehrt nur zurck, wenn ein Signal empfangen wird. Rückgabe -1 bei Fehler, errno 00 EINTR
+
+Neben pause() können noch sleep(..), usleep(..) und nanosleep(..) verwendet werden, um einen Prozess zu Suspendieren.
+
+Durch Angabe eines Zeitwertes kehren die Funktionen auch zurückm wenn kein Signal empfangen wurde.
+
+Rückgabe: 0 bei Ablauf des Timers, sleep(..) liefert ansonsten die Restsekunden falls schalf durch Signal unterbrchen wurde. Die anderen beiden leifern in dem Fall -1.
+
+sigprocmask(..) + pause (..) => sigsuspend(..)  
+"Rücksetzen der Prozessmaske und warten auf Signal"
+
+**Programmabbrucht mit abort**
+
+Anomales Beenden eines Prozesses kann mit SIGABRT. Besser als bei SIGKILL kann ein Benutzer definierter Handler vor dem Beenden noch Aufräumarbeiten durchführen. 
+
+```c
+void abort(void);
+```
+
+Die Funktion kehrt niemals zurück.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+#include <string.h>
+
+void handler(int sig) 
+{
+    int rest = alarm(0);
+    printf("%d %s\n", rest, strsignal(sig));
+    alarm(rest);
+}
+
+int main(int argc, char **argv)
+{
+    int dauer = 10;
+
+    if (argc > 1) dauer = atoi(argv[1]);
+
+    alarm(dauer);
+
+    struct sigaction act = {handler, 0,0};
+
+    if (sigaction(SIGUSR2, &act, NULL)) perror("sigaction");
+
+    while (1) pause();
+
+    return EXIT_SUCCESS;
+}
+```
+
+## 11. Pipes und FIFOs ##
+
+### 11.1 Pipes ###
+
+Zwei wesentliche Eigenschaften:
+- eine Pipe kann nur zwischen zwei verwandten Prozessen eingerichtet werden (eltern-Kind). Typisch: Elternprozess richtet Pipe ein, es erfolgt fork(). Kindprozess erbt Pipe und beide können sie Benutzen.
+- Eine Pipe ist stets Halp-Duplex, das heißt, sowie Daten auf einer Seite hineingeschrieben werden, so werden auf der anderen Seite ausgelesen. Dazu werden zwei Filedeskriptoren angeboten, einer zum Lesen, einer zum Schreiben. 
+
+#### Einrichten einer Pipe ####
+
+Systemfunktion: pipe(..)
+
+```c
+#include <unistd.h>
+
+int pipe(int fd[2]); //zwei Filedeskriptoren
+```
+
+Die beiden Filedeskriptoren werden im angegebenen Übergabeparameter zurückgeliefert.
+
+Rückgabe: 0 bei Erfolg, -1 sonst
+
+Die Filedeskriptoren sind bereits geöffnet, fd[0] zum Lesen, fd[1] zum Schreiben.
+
+Nach fork() haben beide Prozesse Lese- und Schreibmöglichkeit, Anwendungsentwickler entscheidet die Richtung. Zur vereinfachung können die Prozesse nicht genutzte Filedeskriptoren schließen.
+
+Wird eine Seite der Pipe geschlossen resultieren 2 Regeln:
+
+1. Beim Lesen aus einer Pipe, deren Schreibseite geschlossen ist, liefert read(..) den Wert 0 (EOF).
+
+2. Beim Schreiben in einer Pipe, aus der Keiner mehr ließt (Leseseite geschlossen) liefert write(..) einen Fehler und es wird SIGPIPE an den Prozess gesendet.
+
+#### Verknüpfung von Pipe mit Standardeingabe ####
+
+Nach einem Aufruf von fork() folgt häufig ein Aufruf der Funktion exec().
+
+Will man eine Pipe verwenden (mit fremden Programmcode), so ist Überlagerung eines Standardkanals nötig. Funktion dub2(..) -> close-on-exec Flag wird bei dub2(..) nicht gesetzt.
+
+#### Pipe zu einem anderen Programm ####
+
+Oft möchte man die Ausgabe eines anderen Programmes lesen oder auf die standardeingabe des Programmes schreiben.
+
+```c
+#include <stdio.h>
+
+FILE *popen(const char *cmdline, const char *typ);
+
+int pclose(FILE *stream);
+```
+
+Die Funktion popen(..) liefert bei Erfolg einen Dateizeiger, ansonsten -1.
+
+Die Funktion pclose(..) liefert im Normalfall den Existstatus des Programmes, ansosnten -1.
+
+cmdline ist NULL-Terminierte Kommandozeile und wird in Subshells ausgeführt. Der Typ gibt an ob gelesen 'r' oder geschriebene 'w' werden soll, beides gleichzeitig ist nicht möglich.
+
+Der Stream **muss** mit pclose(..) geschlossen werden. fclose erzeugt Zombie.
+
+### 11.2 Benannte Pipes (FIFOs) ###
+
+Währen pipes nur zwischen Verwandten Prozessen eingesetzt werden können, kann man mit FIFOs auch zwischen bekannten Prozessen Daten austauschen. FIFOs werden auch ales "named Pipes" bezeichnet. 
+
+#### Kreieren einer benannten Pipe ####
+
+```c
+#include <sys/types.h>
+#include <sys/stat.h>
+
+int mkfifo(const char *path, mode_t mode);
+```
+
+Die Funktion liefert 0 bei Erfolg, sonst -1.
+
+Der aufruf bewirkt, dass Datei namens path erzeugt wird. Das ist keine reguläre Datei, sondern eine FIFO. Das Argument mode gibt Zugriffsrechte an.
+
+Danach können beliebige Prozesse die FIFO Lesen oder Schreiben.

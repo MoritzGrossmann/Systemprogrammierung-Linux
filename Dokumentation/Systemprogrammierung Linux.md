@@ -69,6 +69,12 @@
             - [Pipe zu einem anderen Programm](#pipe-zu-einem-anderen-programm)
         - [11.2 Benannte Pipes (FIFOs)](#112-benannte-pipes-fifos)
             - [Kreieren einer benannten Pipe](#kreieren-einer-benannten-pipe)
+            - [Zugriffsregeln für FIFOs](#zugriffsregeln-f%C3%BCr-fifos)
+    - [12 interprozesskommunikation](#12-interprozesskommunikation)
+        - [12.1 Kennungen und Schlüsell](#121-kennungen-und-schl%C3%BCsell)
+        - [12.2 Erzeugen eines neuen Objektes](#122-erzeugen-eines-neuen-objektes)
+        - [12.3 Verbinden mit einem vorhandenen Objekt](#123-verbinden-mit-einem-vorhandenen-objekt)
+        - [12.4 Löschen von Objekten](#124-l%C3%B6schen-von-objekten)
 
 ## Öffnen von Dateien mit C-Standard ##
 
@@ -1752,3 +1758,79 @@ Die Funktion liefert 0 bei Erfolg, sonst -1.
 Der aufruf bewirkt, dass Datei namens path erzeugt wird. Das ist keine reguläre Datei, sondern eine FIFO. Das Argument mode gibt Zugriffsrechte an.
 
 Danach können beliebige Prozesse die FIFO Lesen oder Schreiben.
+
+#### Zugriffsregeln für FIFOs ####
+
+- Blockierendes Öffnen einer FIFO wird beim Öffnen einer FIFO das Flag O_NONBLOCK **nicht** verwendet (Normalfall). So blockiert Open mit Modus O_RDONLY so lange, bis FIFO auch zum Schreiben geöffnet wird. Umgekehrt wird ein open(..) mit O_WRONLY so lange blockiert, bis FIFO auch zum LEsen geöffnet wird
+- Nicht Blockierendes Öffnen einer FIFO. Ist das Flag O_NONBLOCK gesetzt kehrt open(..) mit O_RDONLY sofort zurück. Ein open(..) mit O_WRONLY dagegen führt zu Fehler (ENXIO), falls die FIFO nciht bereits zum lesen geöffnet wurde.
+- Schreiben einer FIFO ohne Leser. Wird in eine FIFO gescheribeen, die nocht auch zum Lesen geöffnet ist, wird SIGPIPE generiert.
+- Lesen einer FIFO  ohne Schreiber schließ der letzte Schreibende Prozess die FIFO, wird für den Leser ein EOF erzeugt.
+- Gleichzeitiges Schreiben meherere Prozesse. Es ist garantiert, dass sich Daten nicht mischen, so lange nicht mehr als PIPE_BUF Bytes auf einmal geschrieben werden.
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+void handler(int sig)
+{
+    printf("cought signal: %s\n", strsignal(sig));
+}
+
+int main(int argc, char **argv)
+{
+    struct sigaction act = {handler, 0};
+    sigaction(SIGPIPE, &act, NULL);
+
+    int fd[2];
+
+    if(pipe(fd)) perror("pipe");
+
+    char *str = "I am writing a text t oa pipe, which is buffered in kernel\n";
+
+    int len = strlen(str);
+
+    if (len != write(fd[1], str, len)) perror("write");
+
+    char buf[len];
+
+    buf[0] = 0;
+
+    if (len != read(fd[0], str, len)) perror("read");
+
+    printf("%s", buf);
+
+    return EXIT_SUCCESS;
+}
+```
+
+## 12 interprozesskommunikation ##
+
+Message-Queues, Semaphore und Shared-Memory
+
+### 12.1 Kennungen und Schlüsell ###
+
+Der Kernel verwaltet die IPC-Hilfmittel weitesgehend einheitlich. Jedem IPC-Objekt wird eine Systemweit eindeutige Nummer (Kennung/Identifier) zugeordnet. Jeder Prozess, der den Identifikator eines IPC-Objektes kennt, kann sicht mit diesem Verbinden. Das erzeugen von IPC-Objekten geschieht implizit. Bei einer Verbindungsanfrage mit den Funktionen: msgget, semget, shmget. Dabei erwarten diese Funktionen stets die Angabe eines Schlüssels. ISt ein Objekt mit entsprechenden Schlüssel verfügbar, so wird dessen Kennung zurückgeleifert. Gibt es kein passendes Objekt, so wird ein neues eingerichtet. Möchte man sicher ein neues Objekt erzeugen, nutzt man die Kennung IPC_PRIVATE.
+
+### 12.2 Erzeugen eines neuen Objektes ###
+
+Die Funktionen akzeptieren Flags. Zum Erzeugen muss das Flag IPC_CREAT anegegeben werden. Ist außerdem das Flag IPC_EXCLUSIVE gesetzt, so liefern die Funktionen einen Fehler (-1) fall zu gegebenen Schlüssel bereits ein Objekt exisitert. 
+
+### 12.3 Verbinden mit einem vorhandenen Objekt ###
+
+Möchte man die Kennung eines vorhandenen Objektes erfragen, muss man denselben Schlüssel benutzen, wie beim Erzeugen. Außerdem darf IPC_CREATE nicht gesetzt sein.
+
+```bash
+$> ipcs
+```
+### 12.4 Löschen von Objekten ###
+
+IPC-Objekte existieren solange, bis sie explizit gelöscht werden, oder ein shutdown erfolg.
+
+```bash
+$> ipcrm
+```

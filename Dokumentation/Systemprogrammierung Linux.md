@@ -1,99 +1,109 @@
 # Systemprogrammierung Linux #
 
 - [Systemprogrammierung Linux](#systemprogrammierung-linux)
-    - [Öffnen von Dateien mit C-Standard](#%C3%B6ffnen-von-dateien-mit-c-standard)
-        - [Flags](#flags)
     - [3. Fehlerbehandlung](#3-fehlerbehandlung)
-        - [Error.h](#errorh)
-    - [Parsen von Kommandozeilen](#parsen-von-kommandozeilen)
+        - [Error.h](#error-h)
+        - [Parsen von Kommandozeilen](#parsen-von-kommandozeilen)
         - [Abstrakt](#abstrakt)
         - [Probleme](#probleme)
         - [Abhilfe](#abhilfe)
-    - [Elementare I/O-Operationen](#elementare-io-operationen)
+    - [4. Elementare I/O-Operationen](#4-elementare-i-o-operationen)
         - [Wichtige Header](#wichtige-header)
-        - [Filediskreptoren](#filediskreptoren)
+        - [4.1 Filediskreptoren](#4-1-filediskreptoren)
             - [Typische Filediskreptoren](#typische-filediskreptoren)
             - [Verwendete Datei des Kernels anzeigen](#verwendete-datei-des-kernels-anzeigen)
-        - [Lesen und Schreiben von Dateien](#lesen-und-schreiben-von-dateien)
-            - [Öffnen einer Datei](#%C3%B6ffnen-einer-datei)
+        - [4.2 Lesen und Schreiben von Dateien](#4-2-lesen-und-schreiben-von-dateien)
+            - [Öffnen einer Datei](#ffnen-einer-datei)
             - [Lesen und Schreiben einer Datei](#lesen-und-schreiben-einer-datei)
-            - [Schließen einer Datei](#schlie%C3%9Fen-einer-datei)
-        - [Lesen einer Datei](#lesen-einer-datei)
-        - [Schreiben einer Datei](#schreiben-einer-datei)
-        - [Filedeskriptoren in Prozesstabelle](#filedeskriptoren-in-prozesstabelle)
-        - [Schreib-Lesezeiger positionieren](#schreib-lesezeiger-positionieren)
+            - [Schließen einer Datei](#schlie-en-einer-datei)
+            - [Lesen einer Datei](#lesen-einer-datei)
+            - [Schreiben einer Datei](#schreiben-einer-datei)
+        - [4.3 Filedeskriptoren in Prozesstabelle](#4-3-filedeskriptoren-in-prozesstabelle)
+            - [Schreib-Lesezeiger positionieren](#schreib-lesezeiger-positionieren)
             - [Positionierung im stdid](#positionierung-im-stdid)
             - [Duplizieren von Filedeskriptoren](#duplizieren-von-filedeskriptoren)
             - [Letzten 20 Bytes einer Datei in stdout ausgeben](#letzten-20-bytes-einer-datei-in-stdout-ausgeben)
-        - [Kontrolle der Eigenschaften einer Datei](#kontrolle-der-eigenschaften-einer-datei)
-        - [Filezeiger](#filezeiger)
-    - [Arbeiten mit Dateien und Verzeichnissen](#arbeiten-mit-dateien-und-verzeichnissen)
-        - [Attribute von Dateien](#attribute-von-dateien)
-            - [Auslesen der Datei-Attribute](#auslesen-der-datei-attribute)
-        - [Dateiarten](#dateiarten)
+        - [4.4 Kontrolle der Eigenschaften einer Datei](#4-4-kontrolle-der-eigenschaften-einer-datei)
+        - [4.5 Filezeiger](#4-5-filezeiger)
+    - [5. Arbeiten mit Dateien und Verzeichnissen](#5-arbeiten-mit-dateien-und-verzeichnissen)
+        - [5.1 Attribute von Dateien](#5-1-attribute-von-dateien)
+        - [5.2 Auslesen der Datei-Attribute](#5-2-auslesen-der-datei-attribute)
+        - [5.3 Dateiarten](#5-3-dateiarten)
             - [Makros zum Test des Dateityps](#makros-zum-test-des-dateityps)
-        - [Dateisystemverlinkungen](#dateisystemverlinkungen)
-        - [Dateigröße](#dateigr%C3%B6%C3%9Fe)
-        - [Lesen von Verzeichnissen](#lesen-von-verzeichnissen)
-        - [Gerätedateien](#ger%C3%A4tedateien)
-            - [Spezielle Gerätedateien](#spezielle-ger%C3%A4tedateien)
-        - [Puffercache](#puffercache)
+        - [5.4 Dateizugriffsrechte](#5-4-dateizugriffsrechte)
+            - [Einfache Zugriffsrechte](#einfache-zugriffsrechte)
+            - [Erweiterte Zugriffsrechte](#erweiterte-zugriffsrechte)
+            - [Ändern der Zugriffsrechte](#ndern-der-zugriffsrechte)
+            - [Dateikreirungsmaske](#dateikreirungsmaske)
+        - [5.5 Ändern von Besitzer und Gruppe](#5-5-ndern-von-besitzer-und-gruppe)
+        - [5.6 Dateisystemverlinkungen](#5-6-dateisystemverlinkungen)
+        - [5.7 Dateigröße](#5-7-dateigr-e)
+        - [5.8 Zeiten einer Datei](#5-8-zeiten-einer-datei)
+        - [5.9 Verzeichnisse](#5-9-verzeichnisse)
+            - [Lesen von Verzeichnissen](#lesen-von-verzeichnissen)
+        - [5.10 Gerätedateien](#5-10-ger-tedateien)
+            - [Spezielle Gerätedateien](#spezielle-ger-tedateien)
+        - [5.11 Puffercache](#5-11-puffercache)
     - [7. Prozesse unter Linux](#7-prozesse-unter-linux)
-        - [7.1 Start eines Prozesses](#71-start-eines-prozesses)
-        - [7.2 Beenden eines Prozesses](#72-beenden-eines-prozesses)
+        - [7.1 Start eines Prozesses](#7-1-start-eines-prozesses)
+        - [7.2 Beenden eines Prozesses](#7-2-beenden-eines-prozesses)
             - [Exit-Status eines Prozesses](#exit-status-eines-prozesses)
-            - [Beenden ohne Aufräumen](#beenden-ohne-aufr%C3%A4umen)
-            - [Zusätzliches Aufräumen](#zus%C3%A4tzliches-aufr%C3%A4umen)
-        - [7.3 Umgebungsvariablen](#73-umgebungsvariablen)
-        - [7.5 Ressourcenbeschränkungen](#75-ressourcenbeschr%C3%A4nkungen)
+            - [Beenden ohne Aufräumen](#beenden-ohne-aufr-umen)
+            - [Zusätzliches Aufräumen](#zus-tzliches-aufr-umen)
+        - [7.3 Umgebungsvariablen](#7-3-umgebungsvariablen)
+            - [Abfragen einzelner Umgebungsvariablen](#abfragen-einzelner-umgebungsvariablen)
+            - [Verändern von Umgebungsvariablen](#ver-ndern-von-umgebungsvariablen)
+            - [Speicherstruktur eines Prozesses](#speicherstruktur-eines-prozesses)
+        - [7.4 Dynamisches Anfordern von Speicher](#7-4-dynamisches-anfordern-von-speicher)
+            - [Freigabe dynamisch angeforderten Speicherplatzes](#freigabe-dynamisch-angeforderten-speicherplatzes)
+            - [Anfordern von Speicherplatz im Stack](#anfordern-von-speicherplatz-im-stack)
+        - [7.5 Ressourcenbeschränkungen](#7-5-ressourcenbeschr-nkungen)
             - [Einige Limits und deren Bedeutung](#einige-limits-und-deren-bedeutung)
             - [Beispiel](#beispiel)
-        - [7.6 Ressourcenverbrauch](#76-ressourcenverbrauch)
-        - [7.7 Identifikation von Prozessen](#77-identifikation-von-prozessen)
+        - [7.6 Ressourcenverbrauch](#7-6-ressourcenverbrauch)
+        - [7.7 Identifikation von Prozessen](#7-7-identifikation-von-prozessen)
             - [Abfrage von PID und PPID](#abfrage-von-pid-und-ppid)
-            - [Abfrage der realen User- und Group-ID](#abfrage-der-realen-user--und-group-id)
-            - [Abfrage der effektiven User- und Group-ID](#abfrage-der-effektiven-user--und-group-id)
-        - [7.8 Prozesse erzeugen](#78-prozesse-erzeugen)
-        - [7.9 Auf Beendigung eines Prozesses warten](#79-auf-beendigung-eines-prozesses-warten)
+            - [Abfrage der realen User- und Group-ID](#abfrage-der-realen-user-und-group-id)
+            - [Abfrage der effektiven User- und Group-ID](#abfrage-der-effektiven-user-und-group-id)
+        - [7.8 Prozesse erzeugen](#7-8-prozesse-erzeugen)
+        - [7.9 Auf Beendigung eines Prozesses warten](#7-9-auf-beendigung-eines-prozesses-warten)
             - [Verweiste Kindprozesse](#verweiste-kindprozesse)
             - [Zombieprozesse](#zombieprozesse)
                 - [Verhindern von Zombies](#verhindern-von-zombies)
-            - [Informationen über benutzte Ressourcen](#informationen-%C3%BCber-benutzte-ressourcen)
-        - [7.10 Synchronisation](#710-synchronisation)
-        - [7.11 Systemruf exec](#711-systemruf-exec)
-        - [8.4 Das neue Signalkonzept](#84-das-neue-signalkonzept)
+            - [Informationen über benutzte Ressourcen](#informationen-ber-benutzte-ressourcen)
+        - [7.10 Synchronisation](#7-10-synchronisation)
+        - [7.11 Systemruf exec](#7-11-systemruf-exec)
+            - [Vererbung bei exec](#vererbung-bei-exec)
+        - [7.12 Die Funktion system](#7-12-die-funktion-system)
+        - [7.13 Verändern von User ID und Group ID](#7-13-ver-ndern-von-user-id-und-group-id)
+            - [User-ID und Group-ID für Dateisystemzugriffe](#user-id-und-group-id-f-r-dateisystemzugriffe)
+    - [8. Signale](#8-signale)
+        - [8.1 Einrichten von Signalhandlern](#8-1-einrichten-von-signalhandlern)
+        - [8.2 Kindprozesse und Signale](#8-2-kindprozesse-und-signale)
+        - [8.3 Signalnummer](#8-3-signalnummer)
+        - [8.4 Das neue Signalkonzept](#8-4-das-neue-signalkonzept)
     - [11. Pipes und FIFOs](#11-pipes-und-fifos)
-        - [11.1 Pipes](#111-pipes)
+        - [11.1 Pipes](#11-1-pipes)
             - [Einrichten einer Pipe](#einrichten-einer-pipe)
-            - [Verknüpfung von Pipe mit Standardeingabe](#verkn%C3%BCpfung-von-pipe-mit-standardeingabe)
+            - [Verknüpfung von Pipe mit Standardeingabe](#verkn-pfung-von-pipe-mit-standardeingabe)
             - [Pipe zu einem anderen Programm](#pipe-zu-einem-anderen-programm)
-        - [11.2 Benannte Pipes (FIFOs)](#112-benannte-pipes-fifos)
+        - [11.2 Benannte Pipes (FIFOs)](#11-2-benannte-pipes-fifos)
             - [Kreieren einer benannten Pipe](#kreieren-einer-benannten-pipe)
-            - [Zugriffsregeln für FIFOs](#zugriffsregeln-f%C3%BCr-fifos)
+            - [Zugriffsregeln für FIFOs](#zugriffsregeln-f-r-fifos)
     - [12 interprozesskommunikation](#12-interprozesskommunikation)
-        - [12.1 Kennungen und Schlüsell](#121-kennungen-und-schl%C3%BCsell)
-        - [12.2 Erzeugen eines neuen Objektes](#122-erzeugen-eines-neuen-objektes)
-        - [12.3 Verbinden mit einem vorhandenen Objekt](#123-verbinden-mit-einem-vorhandenen-objekt)
-        - [12.4 Löschen von Objekten](#124-l%C3%B6schen-von-objekten)
-
-## Öffnen von Dateien mit C-Standard ##
-
-```c
-FILE* fopen(char *name, char *flags);
-```
-
-### Flags ###
-
-| Flag | Erklärung                                                                            |
-| ---- | ------------------------------------------------------------------------------------ |
-| "r"  | Datei zum lesen öffnen                                                               |
-| "r+" | Datei zum lesen und schreiben öffnen                                                 |
-| "rb" | Datei binär öffnen                                                                   |
-| "w"  | erstellt eine neue Datei zum schreiben, wenn schon existent, dann wird überschrieben |
-| "w+  | erstellt eine neue Datei zum lesen und schrieben                                     |
-| "wb" | Datei binär schreiben                                                                |
-| "a"  | appends to file                                                                      |
-| "ab" |
+        - [12.1 Kennungen und Schlüsell](#12-1-kennungen-und-schl-sell)
+        - [12.2 Erzeugen eines neuen Objektes](#12-2-erzeugen-eines-neuen-objektes)
+        - [12.3 Verbinden mit einem vorhandenen Objekt](#12-3-verbinden-mit-einem-vorhandenen-objekt)
+        - [12.4 Löschen von Objekten](#12-4-l-schen-von-objekten)
+        - [12.5 Zugriffsrechte](#12-5-zugriffsrechte)
+        - [12.6 Limits](#12-6-limits)
+        - [12.7 Message-Queues](#12-7-message-queues)
+            - [Status einer Warteschalnge](#status-einer-warteschalnge)
+            - [Limits](#limits)
+            - [Erzeugen einer Message-Queue](#erzeugen-einer-message-queue)
+            - [Senden einer Nachricht](#senden-einer-nachricht)
+            - [Aufbau einer Nachricht](#aufbau-einer-nachricht)
+            - [Empfang einer Nachricht](#empfang-einer-nachricht)
 
 ## 3. Fehlerbehandlung ##
 
@@ -217,7 +227,7 @@ moritz@FUJITSU-U904:~/Systemprogrammierung Linux/C-Programme$ ./error
 extern void (*error_print_progname)(void)
 ```
 
-## Parsen von Kommandozeilen ##
+### Parsen von Kommandozeilen ###
 
 Bsp.:
 
@@ -290,7 +300,7 @@ prog --field=1 --xcoord 20 --ycoord=10
 #include <fcntl.h>
 ```
 
-### Filediskreptoren ###
+### 4.1 Filediskreptoren ###
 
 Im UNIX-Kern werden Dateien und Verzeichnisse in Form von Zugriffsnummern, sog. Deskriptoren, verwaltet.
 
@@ -434,7 +444,7 @@ int close(int fd);
 
 > Maximal können **OPEN_MAX** Deskriptoren geöffnet werden
 
-### Lesen einer Datei ###
+#### Lesen einer Datei ####
 
 ```c
 #include <unistd.h>
@@ -443,7 +453,7 @@ ssize_t read(int fd, void *buffer, size_t bytes);
 ```
 **Rückgabe:** tatsächlich gelesene Anzahl Bytes, oder 0, falls Dateiende erreicht oder -1 im Fehlerfall
 
-### Schreiben einer Datei ###
+#### Schreiben einer Datei ####
 
 ```c
 #include <unistd.h>
@@ -461,7 +471,7 @@ ssize_t write(int fd, void *buffer, size_t bytes);
 
 > Setzt man das Flag **O_SYNC** so kehrt write(...) erst dann zurück, wenn die Daten tatsächlich auf das Medium geschrieben sind
 
-### Filedeskriptoren in Prozesstabelle ###
+### 4.3 Filedeskriptoren in Prozesstabelle ###
 
 | fd  | Flags  | Zeiger |
 | --- | ------ | ------ |
@@ -493,7 +503,7 @@ ssize_t write(int fd, void *buffer, size_t bytes);
 
 > Ein weiterer Prozess öffnet die gleiche Datei mit einem neuen Schreib-Lesezeiger
 
-### Schreib-Lesezeiger positionieren ###
+#### Schreib-Lesezeiger positionieren ####
 
 Öffnet man eine Datei normal, befindet sich der Zeiger am Anfang der Datei. (Offset=0)
   
@@ -575,7 +585,7 @@ Positionierung in stdin ist möglich
 
 ```
 
-#### 4.3 Duplizieren von Filedeskriptoren ####
+#### Duplizieren von Filedeskriptoren ####
 
 Es gibt Anwendungsfälle, in denen das Duplizieren von Filedeskriptoren erforderlich ist. 
 Dafür gibt es 2 Funktionen
@@ -768,7 +778,7 @@ struct stat {
 }
 ```
 
-#### 5.2 Auslesen der Datei-Attribute ####
+### 5.2 Auslesen der Datei-Attribute ###
 
 ```c
 #include <sys/types.h>
@@ -840,6 +850,82 @@ int main(int argc, char **argv)
 
 S_ID wird jediglich durch S_IF ersetzt
 
+### 5.4 Dateizugriffsrechte ###
+
+- Lesen r
+- Schreiben w
+- Ausführen x
+> Jeweils für:
+- Eigentümer
+- Gruppe
+- Andere
+
+| Typ    | Typ    | Typ    |
+| ------ | ------ | ------ |
+| E-R    | G-R    | O-3    |
+| rwx    | rwx    | rwx    |
+
+- x = 1
+- w = 2
+- wx = 3
+- r = 4
+- xr = 5
+- wr = 6
+- rwx = 7
+
+Für ausführbare Dateien existiert ein weiteres Flag mit Sonderfunktion:
+Das Flag überträgt die Berechtigung des Bsitzers der ausführbaren Datei an den Benutzer der das Programm ausführt.
+
+Bsp.: passwd [username] -> Benötigt root-Rechte
+-> Gibt root-Benutzertyp zum ändern des Passworts
+
+Wenn Bit gesetzt, dass einer es machen darf
+-> Dann dürfen es alle
+
+Bessere Alternative:
+sudo und etc/sudou verwenden
+-> Lässt für einzelne Dateien sudo setzen
+
+#### Einfache Zugriffsrechte ####
+- 9-Bit Rechtesystem für Dateien
+- Zum Löschen/Erzeugen einer Datei benötigt man Ausführrechte in einem Ordner, der die Datei enthält
+- Ebenso benötigt man Ausführrecht an einem Verzeichnis in das man wechseln möchte.
+
+#### Erweiterte Zugriffsrechte ####
+Rechteübertragung von z.B. root mittels Sticky-Bit
+
+Ein Prozess der unter realer UID/GID (vom Benutzer erhalten) gestartet wird, bekommt nun effektive Eigentümer (SUID) und Gruppenrechte (SGID) zugeordnet.
+
+#### Ändern der Zugriffsrechte ####
+```c
+#include <sys/types.h>
+#include <sys/stat.h>
+
+int chmod(const char* path, mode_t mode);
+int fchmod(int fd, mode_t mode);
+```
+> Rückgabe: 0 bei Erfolg, -1 sonst.
+
+#### Dateikreirungsmaske ####
+```c
+mode_t umask(mode_t mask);
+```
+> Die umask ist eine Maske, sie enthält Rechte, die verweigert werden -> also verboten.
+> Rückgabe ist die vorherige umask, erwartet wird die umask
+
+### 5.5 Ändern von Besitzer und Gruppe ###
+
+```c
+#include <sys/types.h>
+#include <unistd.h>
+
+int chown(const char* path, uid_t owner, gid_t group);
+int fchown(int fd, uid_t owner, gid_t group);
+int lhown(const char* path, uid_t owner, gid_t group);
+```
+> Rückgabe: 0 bei Erfolg, -1 sonst.
+> Ist auf aktuellen Systemen _POSIX_CHOWN_RESTRICTED definert, benötigt man SU-Rechte für chown
+
 ### 5.6 Dateisystemverlinkungen ###
 
 Es gibt zwei Arten von Verlinkungen: Hard Links und Soft Links (symbolische Links)
@@ -857,8 +943,8 @@ Richtet man die Dtaei später wieder ein, funktioniert alles wie zuvor.
 
 Unter Linux existiert keine Datei, die (nicht) irgendwie verlinkt ist.
 Verzeichnisbaum:
-    Wurzel      /
-	(root)    L bin
+- Wurzel      /
+(root)    L bin
 		  L etc
 		  L ...
 		  L name
@@ -925,7 +1011,7 @@ int readlink(const char* symlink, char* puffer, int size);
 > Pfadname der Zieldatei oder -1 bei Fehlern.
 > Die in den Puffer geschriebene Zeichenakette wird nicht Nullterminiert
 
-### Dateigröße ###
+### 5.7 Dateigröße ###
 struct stat -> st_size (Bytes) für reg.Dateien, Verzeichnisse und symlinks
 
 Blockgröße 512 oder 1024 Bytes
@@ -948,8 +1034,10 @@ int ftruncate(int fd, off_t length);
 > Es besteht aber auch die Möglichkeit eine Datei virtuell zu vergrößern. Das kann Sinnvoll sein, wenn man z.B. für einen bevorstehenden Download Plattenplatz reservieren möchte. 
 > Beim vergrößern können Löcher entstehen, dessen Bytes beim Auslesen den Wert 0 haben.
 
-### Zeiten einer Datei ###
+### 5.8 Zeiten einer Datei ###
 
+| Time      | Use             |
+| --------- | --------------- |
 | st_mtime  | modification    |
 | st_atime  | access          |
 | st_ctime  | change (i-Node) |
@@ -988,7 +1076,7 @@ struct timeval{
 		}
 ```
 
-### Verzeichnisse ###
+### 5.9 Verzeichnisse ###
 
 Anlegen eines neuen Ordners:
 ```c
@@ -1010,7 +1098,7 @@ int rmdir (const char* path);
 > Liefert 0 bei Erfolg, -1 bei Fehler.
 
 
-### Lesen von Verzeichnissen ###
+#### Lesen von Verzeichnissen ####
 
 ```c
 #include <sys/types.h>
@@ -1125,7 +1213,7 @@ int main(int argc, char **argv)
 
 ```
 
-### Gerätedateien ###
+### 5.10 Gerätedateien ###
 
 Gerätedateien sind Kernel-Schnittstellen zur Hardware, genauer gesagt zum Treiber, der die Hardware steuert.
 
@@ -1166,7 +1254,7 @@ Major Number legt Gerätetyp fest, während Minor-Number dem pasenden Treiebr ü
     - Wird genutzt zum generieren von sicherheitsrelevanten Zahlen (z.B. Schlüsseln)
     - bei urandom wird ein Algorithmus für Zufallszahlen genutzt
 
-### Puffercache ###
+### 5.11 Puffercache ###
 
 ```c
 #include <unistd.h>
@@ -1186,9 +1274,10 @@ Physikalische Schreibprozesse werden von einem Hintergrundprozess etwas alle 30 
 ## 7. Prozesse unter Linux ##
 
 Ein laufendes Programm in einem Multitasking-Betriebssystem wird Prozess genannt.  
-Jeder Prozess läuft in einer Umgebung (Environment), er benötigt Seicher, benötigt Zugriff auf Ressourcen, das Dateisystem, externe Geräte, Treiber etc. Auch Treiber sind Programme. Es muss auch geregelt sein, wie Prozesse, zum Zwecke des Datenaustausches oder spezieller Benachrichtigungen, miteinander kommunizieren können.
+Jeder Prozess läuft in einer Umgebung (Environment), er benötigt Seicher, Zugriff auf Ressourcen, das Dateisystem, externe Geräte, Treiber etc. Auch Treiber sind Programme. Es muss auch geregelt sein, wie Prozesse, zum Zwecke des Datenaustausches oder spezieller Benachrichtigungen, miteinander kommunizieren können.
 
 ### 7.1 Start eines Prozesses ###
+Startup-Routine im Kernel sorgt für den Aufruf der main-Funktion, Übergabe von Argumenten und der Bereitstellung von Umgebungsdaten.
 
 ```c
 
@@ -1201,18 +1290,18 @@ Das Array argv enthält an der Stelle argv[argc] einen NULL-Pointer. (POSIX /C-S
 ### 7.2 Beenden eines Prozesses ###
 
 Linux unterscheidet zwei Arten, wie ein Prozess beendet werden kann.  
-Normalerweise endet ein Prozess mit dem Ende der main-Funktion und entsprechenden Rückgabewert.  
+Normalerweise endet ein Prozess mit dem Ende der main-Funktion und des entsprechenden Rückgabewertes.  
 Alternativ kann die Funktion exit(...) verwendet werden. Ein Prozess kann auch beendet werden, wenn man die Ausführung abbricht, mittels abort(...) oder einem externen Signal.
 
 #### Exit-Status eines Prozesses ####
 
 Beendet sich ein Programm regulär, leifert es einen Wert zurück. Der Wert kann Aufschluss übder den Erfolg des Programmes geben.
 
-Im ERfolgsfall typischerweise 0, bei Fehler einen Wert verschieden von 0.
+Im Erfolgsfall typischerweise 0, bei Fehler einen Wert verschieden von 0.
 
 #### Beenden ohne Aufräumen ####
 
-Beendet sich ein PRogramm normal, werden zuvor alle Puffer geleert, alle Dateien geschlossen und die mit der Funktion tempfile() angelegten Dateien gelöscht. Nach dem aufräumen ruft exit(...) seinerseits _exit(...) auf, um zum KErn zurück zu kehren.
+Beendet sich ein PRogramm normal, werden zuvor alle Puffer geleert, alle Dateien geschlossen und die mit der Funktion tmpfile() angelegten Dateien gelöscht. Nach dem aufräumen ruft exit(...) seinerseits _exit(...) auf, um zum Kernel zurück zu kehren.
 
 ```c
 #include <stdlib.h>
@@ -1221,7 +1310,7 @@ void _exit(int status);
 
 ```
 
-Von POSIX vorgeschrieben, bewirkt sofortiges Beenden und Rückkehr zum KErn, ohne Aufräumen.
+Von POSIX vorgeschrieben, bewirkt sofortiges Beenden und Rückkehr zum Kernel, ohne Aufräumen.
 
 #### Zusätzliches Aufräumen ####
 
@@ -1243,13 +1332,74 @@ Durch Deklaration der globalen Variablen
 ```c
 extern char **environ; 
 ```
-kann auf die Umgebungsvariablen zugegriffen werden. Die Variablenbelegnung sind Strings der Form name=Wert.
+kann auf die Umgebungsvariablen zugegriffen werden. Die Variablenbelegung sind Strings der Form name=Wert.
+
+####Abfragen einzelner Umgebungsvariablen####
+```c
+#include <stdlib.h>
+	char * getenv(const char *name);
+```
+Liefert Null, falls name nicht in Environment vorhanden, ansonsten einen Zeiger auf den Anfang von Wert (name = wert)
+Bem.: Sollte möglichst nicht verändert werden, da weitere Aufrufe von getenv den selben Zeiger liefern.
+
+####Verändern von Umgebungsvariablen####
+
+```c
+#include <stdlib.h>
+	int putenv(const char *entry);
+	int setenv(const char *name, const char *wert, int overwrite);
+	void unsetenv(const char *name);
+	int clearenv(void);
+```
+	Rückgabe: 0 bei Erfolg oder ungleich 0 bei Fehler.
+	Der Parameter bei putenv(…) muss schon die Form: "name=wert" besitzen. Sollte name bereits existieren,  wird der bisherige Eintrag entfernt.
+	Demgegenüber ändert setenv(…) den übergebenen Wert, falls ein Eintrag bereits vorhanden, nur, wenn der dritte Parameter overwrite ungleich 0 ist.
+	Die Funktion clearenv(…) liefert Fehler, falls das Environment bereits verändert wurde, ohne putenv, setenv oder unsetenv zu verwenden.
+
+#### Speicherstruktur eines Prozesses####
+
+siehe Bild Speicherstruktur eines Prozesses
+
+### 7.4 Dynamisches Anfordern von Speicher ###
+
+```c
+#include <stdlib.h>
+	void* malloc(size_t size);
+	void* calloc(size_t amount, size_t size);
+	void* realloc(void *ptr, size_t size);
+```
+Konnte der Speicher allokiert werden, liefern die Funktionen seine Adresse (im Heap-Segment) zurück, ansonsten NULL.
+Im Unterschied zu malloc(…) belegt calloc(…) den Speicher mit Nullen.
+Verkleinern oder vergrößern kann realloc(…).
+=> Der Speicherbereich ist in jedem Fall zusammenhängend (verantwortlich ist die MemoryManagementUnit)
+
+####	Freigabe dynamisch angeforderten Speicherplatzes####
+
+```c
+#include <stdlib.h>
+	void free(void *ptr);
+```
+Wird eine Adresse übergeben, die nicht mit obigen Funktionen allokiert wurde oder eine, die bereits mittels free(…) freigegeben wurde, ist das Verhalten undefiniert. Kann fatale Folgen für Prozess haben, da Speicherverwaltung inkonsistent wird.
+	
+Gemäß C-Standard sind folgende Aufrufe identisch:
+- realloc(NULL, groesse); <=> malloc(groesse);
+- realloc(addr, 0); <=> free(addr);
+
+Ein Aufruf von free(NULL) ist wirkungslos.
+
+####Anfordern von Speicherplatz im Stack####
+```c
+#include <stdlib.h>
+	void* alloca(size_t size);
+```
+Bei Erfolg liefert alloca(…) die Speicheradresse (im Stack-Segment), sonst NULL. Stackbereich der momentanen Funktion wird erweitert. Nach Ende der Funktion wird Speicher automatisch frei gegeben, ist also nur temporär.
+Gefahr: Ist nicht genug Speicher vorhanden, ruft alloca(…) einen Stacküberlauf hervor. (Weiterer Programmablauf undefiniert)
 
 ### 7.5 Ressourcenbeschränkungen ###
 
-Die Ressourcenvergabe an Prozesse (Speichergröße, CPU-Zeit, Anzahl geöffneter Dateien, Stack-Größe und weiteres) durch dne Kernel ist beschränkt.
+Die Ressourcenvergabe an Prozesse (Speichergröße, CPU-Zeit, Anzahl geöffneter Dateien, Stack-Größe und weiteres) durch den Kernel ist beschränkt.
 
-Diese Schranken (limits) sind konfigurierbar. In gewissen Bereich kann ein PRozess diese Schranken selbst frei wählen.
+Diese Schranken (limits) sind konfigurierbar. In gewissen Bereich kann ein Prozess diese Schranken selbst frei wählen.
 
 Zum Erfragen und Setzen von Ressourcenbeschränkungen dienen:
 
@@ -1263,7 +1413,7 @@ int setrlimit(int resource, const struct rlimit *ptr);
 
 Rückgabe 0 bei Erfolg und verschieden von 0 Fehler.
 
-Die Structur rlimit:
+Die Struktur rlimit:
 
 ```c
 struct rlimit {
@@ -1332,13 +1482,26 @@ int getrusage(int whom, struct rusage *usage);
 
 Rückgabe 0 bei Erfolg, -1 bei Fehler.
 
-Der Erste Parameter entscheidet, von wem man den Verbrauch erfragen möchte. Das kann eine von 3 Konstanten sein:
+Der erste Parameter entscheidet, von wem man den Verbrauch erfragen möchte. Das kann eine von 3 Konstanten sein:
 
 | Konstante       | Erklärung                                   |
 | --------------- | ------------------------------------------- |
 | RUSAGE_SELF     | Prozes selbst inkl. Threads                 |
 | RUSAGE_CHILDREN | Ressourcenverbrauch aller Kindprozesse      |
 | RUSAGE_THREAD   | Ressourcenverbrauch des aufrufenden Threads |
+
+In Linux verwendet:
+	
+- ru_utime,
+- ru_stime,
+- ru_maxrss,
+- ru_minflt,
+- ru_majflt,
+- ru_inblock,
+- ru_outblock,
+- ru_nvcsw,
+- ru_nivcsw
+
 
 ### 7.7 Identifikation von Prozessen ###
 
@@ -1374,7 +1537,7 @@ uid_t getuid(void);
 gid_t getgid(void);
 ```
 
-Beide Funktionen sind stehts erfolgreich.
+Beide Funktionen sind stets erfolgreich.
 
 #### Abfrage der effektiven User- und Group-ID
 
@@ -1386,11 +1549,11 @@ uid_t geteuid(void);
 gid_t getegid(void);
 ```
 
-Beide Funktionen sind stehts erfolgreich.
+Beide Funktionen sind stets erfolgreich.
 
 ### 7.8 Prozesse erzeugen ###
 
-Will man unter UNIX Prozesse ausneinem laufenden Programm heraus erzeugen nutzt man die Funktion fork();
+Will man unter UNIX neue Prozesse aus einem laufenden Programm heraus erzeugen, nutzt man die Funktion fork();
 
 ```c
 #include <sys/types.h>
@@ -1398,12 +1561,12 @@ Will man unter UNIX Prozesse ausneinem laufenden Programm heraus erzeugen nutzt 
 
 pid_t fork(void);
 ```
-Rückgabe: (im Elternprozess) die PID des neuen Prozesses, (im Kindprozess) die 0, bei Fehler -1.  
-Der Kernel erzeugt bei fork() eine Kopie des aktuellen Prozesses und ordnet dieser den originalprozess als Elternprozess zu. Durch den Rückgabewert können beide unterschieden werden.
+Rückgabe: (im Elternprozess) die PID des neuen (kopierten) Prozesses, im Kindprozess die 0, bei Fehler -1.  
+Der Kernel erzeugt bei fork() eine Kopie des aktuellen Prozesses und ordnet dieser den Originalprozess als Elternprozess zu. Durch den Rückgabewert können beide unterschieden werden.
 
 > Bemerkung: Die Rückgaberegelung als Unterscheidung ist Sinnvoll, da der Kindprozess ohnehin die PID des Elternprozesses mit get_PPID() abfragen kann.
 
-Typisches Scenario
+Typisches Szenario
 
 ```c
 int childID = fork();
@@ -1464,13 +1627,13 @@ int main (int argc, char **argv)
 }
 ```
 
-Einige Kernel setzen bei fork() auf copy-on-write (cow), eine Technik, die den Kindprozess den Speicher des Elternprozesses mitbenutzen lässt, solange dieser nur daraus ließt. Eine echte Kopie wird erst erzeugt, wenn das Kind in den Speicher schreibt. Das ist besondern dann nützlich, wenn auf fork() der Systemruf exec(..) folgt. In dem Fall steht vfork() zur Verfügung.
+Einige Kernel setzen bei fork() auf copy-on-write (cow), eine Technik, die den Kindprozess den Speicher des Elternprozesses mitbenutzen lässt, solange dieser nur daraus ließt. Eine echte Kopie wird erst erzeugt, wenn das Kind in den Speicher schreibt. Das ist besonders dann nützlich, wenn auf fork() der Systemruf exec(..) folgt. In dem Fall steht vfork() zur Verfügung.
 
-> Bemerkung: Bei vfork() ist garantiert, dass der Kindprozess vor dem Elternprozess ausgefhrt wird
+> Bemerkung: Bei vfork() ist garantiert, dass der Kindprozess **vor** dem Elternprozess ausgeführt wird
 
 Linux unterstützt zudem noch den Systemruf clone(), der Ebenfalls eine Prozesskopie erzeugt, wobei die Art und Weise der Prozesskopie einstellbar ist.
 
-Bildes die Grundlage für weitere Operationen mit leichtgewichtigen Prozessen (Threads)
+Bildet die Grundlage für weitere Operationen mit leichtgewichtigen Prozessen (Threads)
 
 ### 7.9 Auf Beendigung eines Prozesses warten ###
 
@@ -1487,9 +1650,9 @@ pid_t wait(int *status);
 pid_t waitpid(pid_t pid, int *status, int opt);
 ```
 
-Beide Funktionen liefern bei Erfolg die ProzessID. Im Falle eines Fehlers wird -1 oder 0 (falls kein kind aktiv ist/war) zurückgegeben und WNOHANG
+Beide Funktionen liefern bei Erfolg die ProzessID. Im Falle eines Fehlers wird -1 oder 0 (falls kein Kind aktiv ist/war) zurückgegeben und WNOHANG
 
-Die Funktion wait() wartet auf Beendigung eines beliebigen Kind-Prozesses, während waitpid(..) auf das Ende eines bestimmten Kindprozesses waren kann.
+Die Funktion wait() wartet auf Beendigung eines beliebigen Kind-Prozesses, während waitpid(..) auf das Ende eines bestimmten Kindprozesses warten kann.
 
 Beide Funktionen blockieren, bei waitpid(..) kann das mit einer Option ausgesetzt werden. 
 
@@ -1508,11 +1671,11 @@ Zur Überprüfung des Exit-Status gibt es folgende Makros:
 
 #### Verweiste Kindprozesse ####
 
-Endet ein Eltternprozess, ehe sich alle seine Kinder beenden so wird der init-Prozess neuer ELternprozess aller verweisten Kinder. So ist gesichert, dass jeder Prozess einen Elternprozess hat. 
+Endet ein Eltternprozess, ehe sich alle seine Kinder beenden so wird der init-Prozess neuer ELternprozess aller verwaisten Kinder. So ist gesichert, dass jeder Prozess einen Elternprozess hat. 
 
 #### Zombieprozesse ####
 
-Endet ein Kindprozess, ohne dass der Elternprozess auf diesen gewartet hat, so merkt sich der Kernel einige Informationen (u.a. PID, exit-status, verbrauchte CPU-Zeit) in seiner Prozesstabelle, bis das der Eltenrprozess wait() oder waitpid(..) aufruft und die Infos abfragt, bzw. damit der Elternprozess das zu einem späteren Zeitpunkt tuten kann.
+Endet ein Kindprozess, ohne dass der Elternprozess auf diesen gewartet hat, so merkt sich der Kernel einige Informationen (u.a. PID, exit-status, verbrauchte CPU-Zeit) in seiner Prozesstabelle, bis das der Eltenrprozess wait() oder waitpid(..) aufruft und die Infos abfragt, bzw. damit der Elternprozess das zu einem späteren Zeitpunkt tun kann.
 
 Den status des Prozesses setzt der Kernel dabei auf Z wie Zombie.
 
@@ -1565,7 +1728,7 @@ EP -> wartet nur kurz auf Beenden von Kindprozess
 KP -> forkt ein zweites mal und beendet sich  
 |  
 |  
-Enkel -> init prozess wird neuer Elternprozess
+Enkel -> init prozess wird neuer Elternprozess(Enkel verwaist)
 
 #### Informationen über benutzte Ressourcen ####
 
@@ -1598,7 +1761,122 @@ int exec(const char *pfad, *pfad, const char *arg0, ... /* NULL */);
 int execlp(const char *datei, const char *arg0, ... /* NULL */);
 
 int execle(const char *pfad, const char *arg0, ... /* NULL */);
+
+int execv(const char *pfad, char* const argv[]);
+
+int execvp(const char *datei, char* const argv[]);
+
+int execvpe(const char *datei, char* const argv[], char* const envp[]);
+
+int execve(const char *pfad, char* const argv[], char* const envp[]);
 ```
+- l… List, Argumentenliste (NULL-terminiert)
+- v… Vector, Kommandozeilenargumente werden als Array übergeben (NULL-terminiert)
+- p… Path, enthält der erste Parameter ein '/', so wird die Datei direkt ausgeführt, ist kein '/' vorhanden, wird im Suchpfad (PATH) nach einer ausführbaren Datei gesucht, enthält diese keinen Maschinencode, so wird eine Shell mit dieser Datei gestartet.
+- e… Environment
+
+#### Vererbung bei exec ####
+Das neue Programme behält vom bisherigen Prozess alle verfügbaren Parameter und Einstellung. Das Schließen von geöffneten Dateien hängt vom close-on-exec-Flag ab. (Voreinstellung: AUS). Die effektive UID und GID werden nur beibehalten, falls das neue Programm das Set-UID oder Set-GID Flag nicht gesetzt hat.
+
+###7.12 Die Funktion system###
+```c
+#include <stdlib.h>
+	int system(const char *Kommandozeile);
+```
+Die Funktion system ist Teil der C-Standardbibliothek.
+Sie kann verwendet werden, um eine Kommandozeile auszuführen, welche z.B. ein anderes Programm startet.
+
+Intern ruft system(…) die Funktionen fork(…), exec(…), und waitpid(…) auf.
+-> system kehrt erst zurück, wenn sich der Prozess beendet hat.
+
+Der Rückgabewert ist -1 im Fehlerfall, ansonsten wird der wait()-Status des ausgeführten Programms zurückgeliefert.
+
+>**Bem.:** Konnte die Shell (/bin/sh) nicht ausgeführt werden, liefert system den Status exit(127), übergibt man an system(…) einen NULL-Zeiger, kann getestet werden, ob eine Shell verfügbar ist. Der Rückgabewert ist ungleich 0, wenn Shell verfügbar, sonst 0.
+
+###7.13 Verändern von User ID und Group ID###
+
+```c
+#include <sys/types.h>
+#include <unistd.h>
+	int setuid(uid_t uid);
+	int setgid(gid_t gid);
+	
+	int seteuid(uid_t uid);
+	int setegid(gid_t gid);
+		 
+	int setreuid(uid_t uid);
+	int setregid(gid_t gid);
+```
+
+Rückgabe: 0 bei Erfolg, sonst -1.
+Die erfolgreiche Ausführung hängt von zu beachtenden Regeln ab.
+
+Sofern ein Prozess Superuser-Rechte besitzt, werden mit setuid(…) und setreuid(…) stets reale und effektive UserID gesetzt, mit setuid(…) ändert sich nur die effektive UID.
+Besitzt der Prozess keine root-Rechte, ist also nicht privilegiert, darf ein Prozess seine reale und effektive UID immer nur vertauschen, gleiches gilt für die GID.
+
+####User-ID und Group-ID für Dateisystemzugriffe####
+
+Sofern ein Prozess Superuser-Rechte besitzt, werden mit setuid(…) und setreuid(…) stets reale und effektive UserID gesetzt, mit setuid(…) ändert sich nur die effektive UID.
+
+Besitzt der Prozess keine root-Rechte, ist also nicht privilegiert, darf ein Prozess seine reale und effektive UID immer nur vertauschen, gleiches gilt für die GID.
+
+##8. Signale##
+
+Signale unter Unix sind sogenannte Software-Interrupts (soft-IRQ bzw. Signale), die im Kernel erzeugt und an Prozesse weitergeleitet werden.
+Quellen für Signale können die Hardware (Interrupts) oder Software gesteuerte Ereignisse (Aufruf einer Systemfunktion, Druck einer bestimmten Taste, Senden eines bestimmten Signals)  sein. Das unter Unix angewandte Signalkonzept bedient sich dabei asynchroner Ereignisse (Signals), verschiedener Event-Handler (Signal-handler) und entsprechender Warteschlangen.
+Prozesse haben die Möglichkeit auch Signale (asynchron) an andere Prozesse zu senden, diese können ihrerseits mit Signalen antworten. Das ermöglicht Kommunikation, die zu Synchronisationszwecken eingesetzt werden kann. Datenaustausch ist dabei (direkt) jedoch nicht möglich.
+
+### 8.1 Einrichten von Signalhandlern ###
+
+Die Funktion signal(…) ermöglicht es, einen benutzerdefinierten Signal-Handler für ein Signal einzurichten. Das Verhalten von signal(…) variiert unter verschiedenen Unix-Varianten. Es sollte deshalb besser das neue Signalkonzept mit der Funktion sigaction(…) benutzt werden.
+
+```c
+#include <signal.h>
+	typedef void (* sighandler_t) (int);
+	sighandler_t signal(int signum, sighandler_t handler);
+```
+
+Als Rückgabewert liefert signal(…) den vorher eingestellten Signalhandler, oder SIG_ERR (== -1)zurück.
+
+Es gibt zwei Wildcards, die als Signalhandler registriert werden können:
+```c
+SIG_IGN (ignore) (== 1)
+SIG_DFL (default) (== 0)
+```
+
+Möchte ein Prozess während der Bearbeitung eines kritischen Abschnittes, einen möglichen Abbruch mit [Strg] + C (SIGTERM) verhindern, so kann mit dem Handler SIG_IGN das Signal (vorübergehend) ignoriert werden. Dieses Szenario funktioniert auf allen Unix-Varianten.
+
+Registriert man eine benutzerdefinierte Routine für ein Signal, so wird bei Auftreten des Signales zuerst der voreingestellte Handler (SIG_DFL) wieder eingesetzt oder die Signalbehandlung wird blockiert und danach der benutzerdefinierte Signalhandler mit der Signalnummer aufgerufen.
+
+### 8.2 Kindprozesse und Signale ###
+
+Kindprozesse, die mittels fork() erzeugt wurden, haben die gleichen Signalhandler wie der Elternprozess. Wenn exec(…) verwendet wird, dann werden aufgrund des Tausches des Maschinencodes, die benutzerdefinierten Handler ungültig und somit auf die voreingestellte Behandlung zurückgesetzt. Ignorierte Signale bleiben unberührt.
+
+### 8.3 Signalnummer ###
+
+Jedem Signal ist eine symbolische Konstante zugeordnet.
+Die Nummer 0 ist nicht vergeben, wird von der Funktion kill(…) als spezieller Parameter verwendet.
+
+> kill -l
+
+| ---------------- | -------------------------------------------------------- |
+| SIGABRT          | abort -> Beenden mit core-Datei                          |
+| SIGALRM          | timer abgelaufen -> Beenden                              |
+| SIGCHLD          | Statusänderung in Kindprozess -> Ignorieren              |
+| SIGCONT          | Angehaltenen Prozess fortsetzen -> Fortsetzen/Ignorieren |
+| SIGFPE           | Floating-Point-Exception -> Beenden mit core-Datei       |
+| SIGHUP           | Verbindungsabbruch -> Beenden                            |
+| SIGILL           | Unerlaubter Befehl -> Beenden mit core-Datei             |
+| SIGINT           | Interrupt am Terminal mit [Strg] + C -> Beenden          |
+| SIGKILL          | Beendigung durch töten -> Beenden                        |
+| SIGPIPE          | Schreiben in Pipe ohne Leser -> Beenden                  |
+| SIGQUIT          | Unterbrechungstaste Terminal -> Beenden mit core-Datei   |
+| SIGSEGV          | Speicherzugriffsfehler -> Beenden mit core-Datei         |
+| SIGSTOP          | Prozess anhalten im Terminal mit [STRG] + Z -> Anhalten  |
+| SIGTERM          | Beendigung -> Beenden                                    |
+| SIGUSR1, SIGUSR2 | benutzerdefiniertes Signal -> Beenden                    |
+|----------------- | -------------------------------------------------------- |
+
 
 ### 8.4 Das neue Signalkonzept ###
 
@@ -1627,9 +1905,9 @@ Bis auf sigismember(..), die entweder 1 (true) oder 0 (false) zurückgibt, liefe
 
 sigfillset, sigemptyset: initialisieren einer signalmenge mit Nullen (leer) oder Einsen (alle).
 
-sigaddset, sigdelset: schalten eintzelne Bits an oder aus.
+sigaddset, sigdelset: schalten einzelne Bits an oder aus.
 
-mit sigismember kann geprüft werden, ob ein Signal in den gegebenen Menge vorhanden ist oder nicht.
+Mit sigismember kann geprüft werden, ob ein Signal in den gegebenen Menge vorhanden ist oder nicht.
 
 **Signalhandler einrichten**
 
@@ -1646,12 +1924,12 @@ Tritt das gleiche Signal währen der Ausführung des Handlers erneut auf, wird e
 ```c
 #include <signal.h>
 
-int sigaction(int signr, const struct sigaction *act, struct sigaction *old_acc);
+int sigaction(int signr, const struct sigaction *act, struct sigaction *old_act);
 ```
 
 Bei Erfolg liefert sigaction(..) den wert 0, und im Fehlerfall -1. Für die letzten beiden Parameter kann NULL angegeben werden, was bedeutet, dass man nur einen Handler abfragen oder nur setzen oder beides gleichzeitig machen möchte. 
 
-Die Datenstructur sigaction wird verwendet um neben dem Signalhandler die zu blockierende Signalmenge und Flags zu blockieren. 
+Die Datenstruktur sigaction wird verwendet um neben dem Signalhandler die zu blockierende Signalmenge und Flags zu blockieren. 
 
 ```c
 struct sigaction {
@@ -1672,9 +1950,9 @@ Optionen:
 | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | SA_NOCLOSTOP | Signal SIGCHILD. wird nur ausgelößt, wenn sich Kindprozess beendet, nicht jedoch bei STOP                                                                                                |
 | SA_NOCLDWAIT | Signal SIGCHILD. vermeidet Zombies. Ruft Elternprozess danach wait(..) auf, kehrt es erst zurück, wenn alle Kinder beendet sind                                                          |
-| SA_RESTART   | Blockierende Systemaufrufe, die durch ein auftretendes Signal unterbrochen wurden, werden automatisch neu gestartet. Ist sas Flag nixht gesetzt, schlägt der Systemaufruf mit EINTR Fehl |
-| SA_NODEFER   | Während der Ausführung eines Handlers wird das wird das selbe Signal nicht automatisch blockiert                                                                                         |
-| SA_RESETHAND | Bei eintritt in die Routine wird der Defaulthandler wieder eingestellt                                                                                                                   |
+| SA_RESTART   | Blockierende Systemaufrufe, die durch ein auftretendes Signal unterbrochen wurden, werden automatisch neu gestartet. Ist sas Flag nicht gesetzt, schlägt der Systemaufruf mit EINTR Fehl |
+| SA_NODEFER   | Während der Ausführung eines Handlers wird das selbe Signal nicht automatisch blockiert                                                                                         |
+| SA_RESETHAND | Bei Eintritt in die Routine wird der Defaulthandler wieder eingestellt                                                                                                                   |
 
 **Synonyme unter Linux**
 
@@ -1710,7 +1988,7 @@ int main(int argc, char **argv)
 
 **Signalmaske abfragen**
 
-möchte man mehrere Signale für einen Prozess blockieren, zum Beispiel während der Abarbeitung eines krititschen Bereiches, kann man dies durch Angabe einer Signalmenge in einem einzigen Funktionsaufruf tun.
+Möchte man mehrere Signale für einen Prozess blockieren, zum Beispiel während der Abarbeitung eines krititschen Bereiches, kann man dies durch Angabe einer Signalmenge in einem einzigen Funktionsaufruf tun.
 
 ```c
 #include <signal.h>
@@ -1718,7 +1996,7 @@ möchte man mehrere Signale für einen Prozess blockieren, zum Beispiel während
 int sigprocmask(int how, const sigset_t *set, sigset_t *dd_set);
 ```
 
-wie bei sigaction(..) kann sigprocmask(..) nicht nur zum Ändern der Signalmaske eingesetzt werden, sondern auch zum Abfragen der aktuellen Maske (gesteuert wird übergabe von NULL-Zeiger). 
+Wie bei sigaction(..) kann sigprocmask(..) nicht nur zum Ändern der Signalmaske eingesetzt werden, sondern auch zum Abfragen der aktuellen Maske (gesteuert wird übergabe von NULL-Zeiger). 
 
 Rückgabewerte sind im Erfolgsfall 0 und im Fehlerfall -1. 
 
@@ -1732,7 +2010,7 @@ Für das erste Element sind drei Werte möglich:
 
 **Hängende Signale**
 
-Ankommende Signal, die von einem Prozess blockiert werden, bleiben hängen. Zur Abfragem wekche Signale gerade hängen, verwendet man sigpending(..).
+Ankommende Signal, die von einem Prozess blockiert werden, bleiben hängen. Zur Abfragem welche Signale gerade hängen, verwendet man sigpending(..).
 
 ```c
 #include <signal.h>
@@ -1750,7 +2028,7 @@ Was kann dabei zu Problemen führen?
 
 - eigene Programmierfehler durch verändern von Daten (Schleifenvariable) im Signalhandler
 - Aufruf nicht reentranter Systemfunktionen, z.B. gleichzeitig in Programm in Programm u. Signalhandler
-
+=> In Signalhandlern dürfen grundsätzlich nur reentrante Funktionen verwendet werden.	
 **Senden von Signalen**
 
 Um einen Prozess Signale senden zu können, muss man berechtigt sein. Berechtigt ist jeder sendende Prozess, der entweder Super-User-Rechte hat oder eine der User-Ids (real/effektiv) mit dem User-IDs des Empfänger-Prozess übereinstimmt.
@@ -1785,7 +2063,7 @@ Das Senden eines NULL-Signals an eine pid bewirkt, dass kill(..) eine Überprüf
 
 **Alarm.Timer einrichten**
 
-Ein Alarm-Timer ist ein zeitgesteuertes bzw. zeit-verzögertes Signal. der Alarm-Timer wird mit alarm(..) eingestellt, welches nach ablauf der angegebenen Zeit das Signal SIGALRM an sich selbst sendet. Wird das Signal nciht durch einen benutzerdef. Handler abgefangen oder ignoriert, so beendet sich der Prozess.
+Ein Alarm-Timer ist ein zeitgesteuertes bzw. zeit-verzögertes Signal. der Alarm-Timer wird mit alarm(..) eingestellt, welches nach ablauf der angegebenen Zeit das Signal SIGALRM an sich selbst sendet. Wird das Signal nicht durch einen benutzerdef. Handler abgefangen oder ignoriert, so beendet sich der Prozess.
 
 ```c
 #include <unistd.h>
@@ -1793,15 +2071,20 @@ Ein Alarm-Timer ist ein zeitgesteuertes bzw. zeit-verzögertes Signal. der Alarm
 int alarm(unsigned int sekunden);
 ```
 
-liefert die Anzahl Restsekunden zurück, die ein zuvor gestarteter Timer noch gehabt hat, oder 0, wenn zuvor kein Timer eingerichtet war. 
+Liefert die Anzahl Restsekunden zurück, die ein zuvor gestarteter Timer noch gehabt hat, oder 0, wenn zuvor kein Timer eingerichtet war. 
 
 Wird alarm(..) mit 0 sekunden aufgerufen, so wird ein aktuell laufender Timer abgebrochen und Restzeit ausgegeben.
 
-Alternativ drei Sstemtimer (ITIMER_REAL, ITMER_VIRTUAL, ITIMER_PROFE).
+Alternativ drei Systemtimer (ITIMER_REAL, ITIMER_VIRTUAL, ITIMER_PROF).
 
 mittels: getitimer(..) und setitimer(..) gesetzt bzw. überprüft werden. 
 
-ITIMER_REAL läuft in echtzeit ab und liefert bei Ablauf SIGALRM
+ITIMER_REAL läuft in Echtzeit ab und liefert bei Ablauf SIGALRM
+
+ITIMER_VIRTUAL läuft nur ab, während Prozess tatsächlich ausgeführt wird und liefert bei Ablauf SIGVTALRM.
+
+ITIMER_PROF läuft sowohl während System- als auch Benutzermodus und liefert bei Ablauf SIGPROF.
+
 
 
 **Suspendieren eines Prozesses**
@@ -1814,13 +2097,13 @@ Suspendieren bis bel. Signal eintrifft: pause();
 int pause(void);
 ```
 
-Die Funktion kehrt nur zurck, wenn ein Signal empfangen wird. Rückgabe -1 bei Fehler, errno 00 EINTR
+Die Funktion kehrt nur zurück, wenn ein Signal empfangen wird. Rückgabe -1 bei Fehler, errno == EINTR
 
-Neben pause() können noch sleep(..), usleep(..) und nanosleep(..) verwendet werden, um einen Prozess zu Suspendieren.
+Neben pause() können noch sleep(..), usleep(..) und nanosleep(..) verwendet werden, um einen Prozess zu suspendieren.
 
-Durch Angabe eines Zeitwertes kehren die Funktionen auch zurückm wenn kein Signal empfangen wurde.
+Durch Angabe eines Zeitwertes kehren die Funktionen auch zurück, wenn kein Signal empfangen wurde.
 
-Rückgabe: 0 bei Ablauf des Timers, sleep(..) liefert ansonsten die Restsekunden falls schalf durch Signal unterbrchen wurde. Die anderen beiden leifern in dem Fall -1.
+Rückgabe: 0 bei Ablauf des Timers, sleep(..) liefert ansonsten die Restsekunden falls Schlaf durch Signal unterbrochen wurde. Die anderen beiden leifern in dem Fall -1.
 
 sigprocmask(..) + pause (..) => sigsuspend(..)  
 "Rücksetzen der Prozessmaske und warten auf Signal"
@@ -1830,6 +2113,7 @@ sigprocmask(..) + pause (..) => sigsuspend(..)
 Anomales Beenden eines Prozesses kann mit SIGABRT. Besser als bei SIGKILL kann ein Benutzer definierter Handler vor dem Beenden noch Aufräumarbeiten durchführen. 
 
 ```c
+#include unistdh.h
 void abort(void);
 ```
 
@@ -1872,7 +2156,7 @@ int main(int argc, char **argv)
 ### 11.1 Pipes ###
 
 Zwei wesentliche Eigenschaften:
-- eine Pipe kann nur zwischen zwei verwandten Prozessen eingerichtet werden (eltern-Kind). Typisch: Elternprozess richtet Pipe ein, es erfolgt fork(). Kindprozess erbt Pipe und beide können sie Benutzen.
+- eine Pipe kann nur zwischen zwei verwandten Prozessen eingerichtet werden (Eltern-Kind). Typisch: Elternprozess richtet Pipe ein, es erfolgt fork(). Kindprozess erbt Pipe und beide können sie Benutzen.
 - Eine Pipe ist stets Halp-Duplex, das heißt, sowie Daten auf einer Seite hineingeschrieben werden, so werden auf der anderen Seite ausgelesen. Dazu werden zwei Filedeskriptoren angeboten, einer zum Lesen, einer zum Schreiben. 
 
 #### Einrichten einer Pipe ####
@@ -1897,7 +2181,7 @@ Wird eine Seite der Pipe geschlossen resultieren 2 Regeln:
 
 1. Beim Lesen aus einer Pipe, deren Schreibseite geschlossen ist, liefert read(..) den Wert 0 (EOF).
 
-2. Beim Schreiben in einer Pipe, aus der Keiner mehr ließt (Leseseite geschlossen) liefert write(..) einen Fehler und es wird SIGPIPE an den Prozess gesendet.
+2. Beim Schreiben in einer Pipe, aus der keiner mehr ließt (Leseseite geschlossen) liefert write(..) einen Fehler und es wird SIGPIPE an den Prozess gesendet.
 
 #### Verknüpfung von Pipe mit Standardeingabe ####
 
@@ -1999,11 +2283,14 @@ Message-Queues, Semaphore und Shared-Memory
 
 ### 12.1 Kennungen und Schlüsell ###
 
-Der Kernel verwaltet die IPC-Hilfmittel weitesgehend einheitlich. Jedem IPC-Objekt wird eine Systemweit eindeutige Nummer (Kennung/Identifier) zugeordnet. Jeder Prozess, der den Identifikator eines IPC-Objektes kennt, kann sicht mit diesem Verbinden. Das erzeugen von IPC-Objekten geschieht implizit. Bei einer Verbindungsanfrage mit den Funktionen: msgget, semget, shmget. Dabei erwarten diese Funktionen stets die Angabe eines Schlüssels. ISt ein Objekt mit entsprechenden Schlüssel verfügbar, so wird dessen Kennung zurückgeleifert. Gibt es kein passendes Objekt, so wird ein neues eingerichtet. Möchte man sicher ein neues Objekt erzeugen, nutzt man die Kennung IPC_PRIVATE.
+Der Kernel verwaltet die IPC-Hilfmittel weitestgehend einheitlich. Jedem IPC-Objekt wird eine Systemweit eindeutige Nummer (Kennung/Identifier) zugeordnet. Jeder Prozess, der den Identifikator eines IPC-Objektes kennt, kann sicht mit diesem verbinden. Das erzeugen von IPC-Objekten geschieht implizit. Bei einer Verbindungsanfrage mit den Funktionen: msgget, semget, shmget. 
+
+Dabei erwarten diese Funktionen stets die Angabe eines Schlüssels. ISt ein Objekt mit entsprechenden Schlüssel verfügbar, so wird dessen Kennung zurückgeleifert. Gibt es kein passendes Objekt, so wird ein neues eingerichtet. Möchte man sicher ein neues Objekt erzeugen, nutzt man die Kennung IPC_PRIVATE.
 
 ### 12.2 Erzeugen eines neuen Objektes ###
 
-Die Funktionen akzeptieren Flags. Zum Erzeugen muss das Flag IPC_CREAT anegegeben werden. Ist außerdem das Flag IPC_EXCLUSIVE gesetzt, so liefern die Funktionen einen Fehler (-1) fall zu gegebenen Schlüssel bereits ein Objekt exisitert. 
+Die Funktionen akzeptieren Flags. 
+Zum Erzeugen muss das Flag IPC_CREAT anegegeben werden. Ist außerdem das Flag IPC_EXCLUSIVE gesetzt, so liefern die Funktionen einen Fehler (-1), falls zu gegebenen Schlüssel bereits ein Objekt exisitert. 
 
 ### 12.3 Verbinden mit einem vorhandenen Objekt ###
 
@@ -2016,6 +2303,122 @@ $> ipcs
 
 IPC-Objekte existieren solange, bis sie explizit gelöscht werden, oder ein shutdown erfolg.
 
+Der Erzeuger, Eigentümer oder Benutzer mit entsprechenden Rechten dürfen ein IPC-Objekt löschen. 
+Zum Löschen können die Funktionen verwendet werden:
+- msgctl
+- semctl
+- shmctl
+> Dabei muss das Kommando (kdo.) IPC_RMID verwendet werden.
+
+
 ```bash
 $> ipcrm
 ```
+
+### 12.5 Zugriffsrechte ###
+
+Zu jedem Objekt können Zugriffsrechte abgefragt bzw. modifiziert werden.
+
+```c
+#inlcude <sys/ipc.h>
+struct ipc_perm
+{
+    uid_t uid; // effektive UID Owner
+    gid_t gid; // -"- GID -"-
+    uid_t cuid; // -"- UID Creator
+    gid_t cgid; // -"- GID -"-
+    mode_t mode; // Zugriffsmodus (rw-rw-rw-)
+    ulong seq; // Kennung
+    key_t key; // Schlüssel
+};
+```
+
+> Die Werte für uid, gid und mode können nachträglich geändert werden.
+> Zugriffsrechte gleichen denen der stat-Struktur, mit Unterschied, dass nur Lesen und Schreiben verwendet wird.
+
+### 12.6 Limits ###
+
+Für alle IPC-Objektarten sind Limits festgelegt, die in der Regel nur durch Neukonfiguration des Kernels verändert werden können.
+
+### 12.7 Message-Queues ###
+
+Nachrichtenwarteschlangen werden im Kernel als verkettete Listen verwaltet. Die Einrichtung geschieht mit msgget(…), das Senden und Empfangen mit msgsnd(…) und msgrcv(…).
+Jede Message besteht aus einem Nachrichtentyp (long) und einem Puffer.
+
+#### Status einer Warteschalnge ####
+
+Für Statusabfragen zu einer Warteschlange steht die Datenstruktur msqid_ds zur Verfügung.
+Das gibt Auskunft über z.B. Zugriffsrechte, Adr. der ersten Nachricht, Adr. der letzten Nachricht, Anzahl Bytes in der Queue, maximale Anzahl Bytes, PID letzter Sender, PID letzter Empfänger, Zeiten: letztes Senden, letztes Empfangen und letzte Änderung.
+
+#### Limits ####
+
+- MSGMAX -> Maximalgröße einer Nachritcht
+- MSGMNB -> maximum number of Bytes in Queue
+- MSGMNI -> max. Anzahl Warteschlangen in System
+- MSGTQL -> max. Anzahl Messages in System
+
+#### Erzeugen einer Message-Queue ####
+
+```c
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+    
+int msgget(key_t schluessel, int flag);
+```
+
+> Lierfert Kennung bei Erfolg oder -1 bei Fehler.
+
+#### Senden einer Nachricht ####
+
+```c
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+
+int msgsnd(int kennung, const void *puffer, size_t mlaenge, int flags);
+```
+
+> Rückgabewerte: 0 bei Erfolg, sonst -1.
+Ist die Warteschlange voll, so blockiert msgsnd(…) normalerweise bis
+- die Warteschlange entsprechend Platz bietet.
+- die Warteschlange gelöscht wird. (EIDRM)
+- ein Signal den Wartezustand unterbricht. (EINTR)
+Soll msgsnd(…) nicht blockieren, so muss IPC_NOWAIT gesetzt sein. Ist die Warteschlange voll, liefert dies Fehler (EAGAIN).
+
+> Bemerkung: Die Angabe mlaenge bezieht sich auf Nutzdaten und darf nicht 0 sein.
+
+#### Aufbau einer Nachricht ####
+Prinizipiell kann das Format einer Nacricht frei gewählt werden. Unix erwartet jedoch, dass die ersten sizeof(long) Byte einer Nachricht stets eine positve Zahl ungleich 0 sind.
+Unix bietet Prioritätensystem basierend auf Typ einer Nachricht.
+Empfehlung:
+
+```c
+struct msg
+{
+    long type; //Zu Beginn der Nachricht befindet sich der Typ
+    char mtext[len]; // Anschließend folgen die eigentlichen Daten, länge kann fest oder variabel 
+                    //sein, speicher muss aber zusammenhängend sein
+};
+```    
+
+#### Empfang einer Nachricht ####
+
+```c
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+    
+int msgrcv(int kennung, void *puffer, size_t maxlen, long typ, int flags);
+```
+    
+Der Rückgabewert ist im Erfolgsfall die tatsächliche Länge der Nachricht.
+Ist die zu empfangene Nachricht größer als Maxlen, liefert msgrcv(…) den Fehelr (E2BIG) und die Nachricht verbleibt in Warteschlange.
+Ist zusätzlich das Falg MSG_NOERROR gesetzt, werden überzählige Bytes abgeschnitten.
+Das Argument typ legt den Typ der Nachricht fest:
+- typ == 0 : Erste Nachricht aus Queue (wie FIFO)
+- typ > 0   : Erste Nachricht mit gewünschten Typ, ist Flag MSG_EXCEPT gesetzt, wird erste Nachricht gewählt, die typ nicht hat
+- typ < 0   : Erste Nachricht, deren Typ <= |typ| ist.
+    
+> Bemerkung: Bei Client-Server Anwendungen wird oft die PID bzw. Kennung der Antwortwarteschlange als Typ verwendet (Multiplex).
+

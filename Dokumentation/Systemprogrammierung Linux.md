@@ -97,7 +97,7 @@ FILE* fopen(char *name, char *flags);
 
 ## 3. Fehlerbehandlung ##
 
-Die Fehlerbehandlung in C besteht aus einem Fehlercode (Fehlernummer) und etwaigen Beschreibungen
+Die Fehlerbehandlung in C besteht aus einem Fehlercode (Fehlernummer) und etwaigen Beschreibungstext. Diese Texte können in verschiedenen Sprachen übersetzt werden.
 
 ```c
 #include <stdio.h>
@@ -139,7 +139,8 @@ int main(int argc, char **argv)
 char *strerror(int errnum);
 ```
 
-liefert entsprechenden Zeiger auf die Fehlermeldung. Ist die Fehlernummer unbekannt wird "Unknown error nnn" zurückgelifert
+liefert entsprechenden Zeiger auf die Fehlermeldung. Ist die Fehlernummer unbekannt wird "Unknown error xxx" zurückgelifert
+Der Fehlerwert erno wird auf EINVAL gesetzt.
 
 ```c
 #include <stdio.h>
@@ -237,10 +238,10 @@ proc -a 123 -b -cd
 - Reihenfolge der Parameter ist beliebig
 - Parameterwerte können durch Leerzeichen getrennt oder direkt nach der Option stehen (bedeuted 1 oder 2 einträge in argv[])
 - optionen können auch direkt (ohne Leerzeichen) aufeinander folgen
-- optionen können in Kommandozeile fehlen (bedeutet: rüfung auf Pfilchtparameter)
+- optionen können in Kommandozeile fehlen (bedeutet: Prüfung auf Pfilchtparameter)
 
-> Ergo: für jede Problem benötigt man Fehlerbehandlung),
-> Nutzer soll wissen, was er falsch gemacht hat
+> Ergo: für jede Problem benötigt man Fehlerbehandlung,
+> (Bedeutet: Benutzer soll wissen, was er falsch gemacht hat)
 
 ### Abhilfe ###
 
@@ -248,7 +249,7 @@ proc -a 123 -b -cd
 int getopt(int argc, char *argv[], char *optString);
 ```
 
-> Header: unix-standard-Header **<unistd.h>**
+> Header: unix-standard-Header **<unistd.h>** (wichtigster)
 
 ```c
 extern char *optarg;   //ist gesetzt, wenn es Argumente gab
@@ -256,14 +257,14 @@ extern char *optarg;   //ist gesetzt, wenn es Argumente gab
 
 Rückgabewert von getopt ist die gefundene Option (ein character). Im Fehlerfall ein '?' (unbekannte Option) oder ':' (pflichtparameter fehlt) bzw leere Menge (kommandozeile zuende)
 
-Unter Linux sind oft noch "lange" optionen, sogenannte Long-options erlaubt.
+Unter Linux sind oft noch "lange" Optionen, sogenannte Long-options erlaubt.
 
 ```c
-int getop_long(...); //Arbeitet im Prinzip wie getopr
+int getopt_long(...); //Arbeitet im Prinzip wie getopr
 
 ```
 
-lange optionen werden mittels Struktur
+Lange Optionen mittels Struktur
 
 ```c
 struct option;
@@ -277,10 +278,10 @@ Bsp.:
 prog --field=1 --xcoord 20 --ycoord=10
 ```
 
-> short-options werden exact so behandelt wie bei getopt  
-> Die struct option bezieht sich nur auf die long options
+> short-options werden exakt so behandelt, wie bei getopt  
+> Die struct-option bezieht sich nur auf die long options
 
-## Elementare I/O-Operationen ##
+## 4. Elementare I/O-Operationen ##
 
 ### Wichtige Header ###
 
@@ -336,7 +337,7 @@ bash      3 moritz  mem    REG    0,0                    38804 /usr/lib/x86_64-l
 ...
 ```
 
-### Lesen und Schreiben von Dateien ###
+### 4.2 Lesen und Schreiben von Dateien ###
 
 #### Öffnen einer Datei ####
 
@@ -359,7 +360,7 @@ Als Flags muss mindestens eines derfolgenden Verwendung finden
 Optional lassen sich bitweise Oder verknüpfen
 
 - O_APPEND datei zum schreiben an das Ende öffnen
-- O_CREATE neu anlegen, falls Datei nicht exisitert
+- O_CREAT neu anlegen, falls Datei nicht exisitert -> mode berücksichtigen
 - O_EXCL verhindert öffnen, fall Datei bereits existiert
 - O_TRUNC Bewirkt Abschneiden, sodass sie neu geschrieben wird
 - O_SYNC warte bis schreibvorgang abgeschlossen ist
@@ -369,7 +370,7 @@ Optional lassen sich bitweise Oder verknüpfen
 | Flag     | Beschreibung                                                            | Oktal |
 | -------- | ----------------------------------------------------------------------- | ----- |
 | O_NOCTTY | falls ein Terminal geöffnet wird, soll es nicht Kontrollterminal werden |
-| O_CREAT  |
+| O_CREAT  | Wird das dritte Argument mode (Zugriffsmodi) benötigt					 |
 | S_ISUID  | set User-Id Bit                                                         |
 | S_ISGID  | set Group-Id Bit                                                        |
 | S_ISVTX  | sticky Bit (saved Text)                                                 |
@@ -386,9 +387,9 @@ Optional lassen sich bitweise Oder verknüpfen
 | S_IXOTH  |
 | S_RWXO   |
 
-> Alternativ kann zum Erzeugen einer Datei auch create(...) verwendet werden. Das ist Äquivalent zu open(...) mit den Flags O_CREAT | O_WRONLY | O_TRUNC
+> Alternativ kann zum Erzeugen einer Datei auch creat(...) verwendet werden. Das ist Äquivalent zu open(...) mit den Flags O_CREAT | O_WRONLY | O_TRUNC
 
-**Beipspiel**
+**Beispiel**
 
 ```c
 #include <sys/stat.h>
@@ -452,13 +453,13 @@ ssize_t write(int fd, void *buffer, size_t bytes);
 
 **Rückgabe:** tatsächliche Anzahl geschriebener Bytes, oder -1 im Fehlerfall
 
-> Bemerkung: Geschriebene Daten werden zunächst in einem Cache gesammelt und zu einem späteren Zeitpunkt auf das physische Gerät geschrieben. **Wenn Sync-Flag beim öffnen gesetzt, dann wird sofort geschrieben**
+> Bemerkung: Geschriebene Daten werden zunächst in einem Cache (Puffer) gesammelt und zu einem späteren Zeitpunkt auf das physische Gerät geschrieben. **Wenn Sync-Flag beim öffnen gesetzt, dann wird sofort geschrieben**
 
 > Zwischenzeitliches Lesen wird dann aus dem Cache beantwortet
 
-> erhöht Schreibgeschwindigkeit, mit dem Nachteil, dass im falle eines Systemabsturzes die Daten verloren sind
+> Erhöht Schreibgeschwindigkeit, mit dem Nachteil, dass im falle eines Systemabsturzes die Daten verloren sind
 
-> Setzt man das Flag **O_SYNC** so kehrt write(...) erst dann zurück, wenn die daten tatsächlich auf das Medium geschrieben sind
+> Setzt man das Flag **O_SYNC** so kehrt write(...) erst dann zurück, wenn die Daten tatsächlich auf das Medium geschrieben sind
 
 ### Filedeskriptoren in Prozesstabelle ###
 
@@ -494,11 +495,11 @@ ssize_t write(int fd, void *buffer, size_t bytes);
 
 ### Schreib-Lesezeiger positionieren ###
 
-Öffnet man eine Datei normal, befindet sich der Zeiger am Anfang der Datei. 
+Öffnet man eine Datei normal, befindet sich der Zeiger am Anfang der Datei. (Offset=0)
   
-Wird eine Datei mit O_APPEND-Flag geöffnet, befindet sich der Zeiger vor jedem Schreiben am Ende der Datei.
+Wird eine Datei mit O_APPEND-Flag geöffnet, befindet sich der Zeiger vor jedem Schreiben am Ende der Datei. Konkurrierender Zugriff von 2 Prozessen auf eine Datei (Bsp. Log-File). Deshalb wird der Schreibkopf immer automatisch auf das Ende der Datei gesetzt.
 
-Jede Schreib- oder LEseoperation bewegt den Zeiger um die tatsächliche Anzahl Bytes vorwärts. 
+Jede Schreib- oder Leseoperation bewegt den Zeiger um die tatsächliche Anzahl Bytes vorwärts. 
 
 Zur Positionierung des Lese-Schreibzeigers kann die Funktion **lseek(..)** verwendet werden. 
 
@@ -513,15 +514,15 @@ off_t lseek(int fd, off_t offset, int woher);
 
 | Parameter | Erklärung                                                                                               |
 | --------- | ------------------------------------------------------------------------------------------------------- |
-| offset    | legt die Byteanzahl fest, u die verschoben werden soll                                                  |
-| woher     | legt fest, von wo die Verschiebung statt findet, also Richtung. Dafür kennt l_seek 3 verschiedene Werte |
+| offset    | Legt die Byteanzahl fest, um die verschoben werden soll                                                  |
+| woher     | Legt fest, von wo die Verschiebung statt findet, also Richtung. Dafür kennt l_seek 3 verschiedene Werte |
   
 
 | Wert | Erklärung |
 |-|-|
 | SEEK_SET | von Dateianfang Richtung Ende. Nur positiver Offset |
-| SEEK_CUR | von aktueller Poistion, Richtung durch Vorzeichen von Offset bestimmt |
-| SEEK_END | vom Dateiende, Richtung wird durch Vorzeichen bestimmt |
+| SEEK_CUR | von aktueller Poistion, Richtung durch Vorzeichen von Offset bestimmt (Lese-/Schreibzeiger + akt. Pos. + offset gesetzt)|
+| SEEK_END | vom Dateiende, Richtung wird durch Vorzeichen bestimmt (Lese-Schreibzeiger wird auf Dateiende + Offset gesetzt)|
 
 > **Bemerkung:** Positionierung/Schreiben hinter das Datei-Ende erzeugt ein Loch. Beim Lesen liefert read(..) dort Nullen
 
@@ -574,7 +575,7 @@ Positionierung in stdin ist möglich
 
 ```
 
-#### Duplizieren von Filedeskriptoren ####
+#### 4.3 Duplizieren von Filedeskriptoren ####
 
 Es gibt Anwendungsfälle, in denen das Duplizieren von Filedeskriptoren erforderlich ist. 
 Dafür gibt es 2 Funktionen
@@ -582,16 +583,16 @@ Dafür gibt es 2 Funktionen
 ```c
 #include <unistd.h>
 
-int dub(int fd);
+int dub(int fd); // Liefert nächsten freien Deskriptor zurück
 
 int dub2(int fd, int fd2);
 
-// Rückgabe: neuer Filedeskriptor bei Erfolg oder -1 im Fehlerfall
+// Rückgabe bei beiden: neuer Filedeskriptor bei Erfolg oder -1 im Fehlerfall
 ```
 
 Erster Parameter ist jeweils der zu duplizierender Filedeskriptor. dub(..) liefert den nächsten frieen Deskriptor zurück.  
 
-dub2(..) liefert als neuen Filedeskriptor den Wert des zweiten Deskriptor. 
+dub2(..): liefert als neuen Filedeskriptor den Wert des zweiten Deskriptor. 
 
 > Soltle fd2 bereits geöffnet sein, wird dieser vorher geschlossen (außer fd und fd2 sind gleich)
 
@@ -656,7 +657,7 @@ int main (int argc, char **argv)
 }
 ```
 
-### Kontrolle der Eigenschaften einer Datei ###
+### 4.4 Kontrolle der Eigenschaften einer Datei ###
 
 Für nachträgliches Abfragen/Ändern von Dateieinstellungen (Flags) verwendet man fcntl(..)
 
@@ -687,7 +688,26 @@ F_SETLK
 F_GETLK  
 F_SETLKW
 
-### Filezeiger ###
+| Flag             | Beschreibung                                                            |
+| ---------------- | ----------------------------------------------------------------------- |
+| F_DUPFD          | Duplizieren eines Filedeskriptors: Das dritte Argument ist zur          |
+| F_DUPFD_CLOEXEC  | vorhandener Filedeskriptor, bei 0 wird nächste Wer verwendet			 |
+|
+| F_SETFD          | Abfrage und setzen der FD-Flags                                         |
+| F_GETFD          | (akt. einziges Flag: FD_CLOEXEC)                                        |
+|
+| F_SETFL          | Abfrage und setzen des Statusflags                                      |
+| F_GETFL          | Bsp.: O_RDONLY, O_APPEND                                                |
+|
+| F_SETOWN         | Abfrage und setzen von PID/PGID des Prozesses                           |
+| F_GETOWN         | der SIGIO und SIGUNG(? ob richtig?)                                     |
+|
+| F_SETLK          | Abfrage und setzen von                                                  |
+| F_GETLK          | record / locks                                                          |
+| F_SETLKW         |                                                                         |
+
+
+### 4.5 Filezeiger ###
 
 Die Standard C-Biblothek verwendet anstelle von Filedeskriptoren Zeiger auf eine Filestruktur.
 
@@ -703,7 +723,7 @@ fileno liefert den Filedeskriptor zu einem FILE-Pointer.
 fdopen liefert einen Zeiger auf eine FILE-Struktur oder NULL im Fehlerfall.
 Der Parameter modus legt Zugriffsart fest ("r", "w", "a", "b", "+" (in Kombination))
 
-Dateiinhalt wird bei "w" nicht (wie bei fopen) gelöscht.
+Dateinhalt wird bei "w" nicht (wie bei fopen) gelöscht.
 
 > Anwendung: z.B. Öffnen von Pipes und Sockets und Verwendung der Standard I/O-Funktionen
 
@@ -726,9 +746,9 @@ int main(int argc, char ** argv)
 }
 ```
 
-## Arbeiten mit Dateien und Verzeichnissen ##
+## 5. Arbeiten mit Dateien und Verzeichnissen ##
 
-### Attribute von Dateien ###
+### 5.1 Attribute von Dateien ###
 
 ```c
 struct stat {
@@ -736,8 +756,8 @@ struct stat {
     ino_t st_ino;           //I-node Nummer
     mode_t st_mode;         //Dateiart und Zugriffsrecht
     nlink_t st_nlink;       //Anzahl der Links
-    uid_t std_uid;          //User-ID
-    gid_t st_gid;           //Group-ID
+    uid_t std_uid;          //User-ID Eigentümer
+    gid_t st_gid;           //Group-ID Eigentümer
     dev_t st_rdev;          //Gerätenummer, spezielle Datei
     off_t st_size;          //Größte in Byte
     blksize_t st_blksize;   //Optimal Blockgröße für File-I/O
@@ -748,7 +768,7 @@ struct stat {
 }
 ```
 
-#### Auslesen der Datei-Attribute ####
+#### 5.2 Auslesen der Datei-Attribute ####
 
 ```c
 #include <sys/types.h>
@@ -763,7 +783,7 @@ int lstat(const char *pfadname, struct stat *puffer);
 
 Die Funktion lstat zeigt, falls es sich bei der Pfadangabe um einen symbolischen Link handelt, die Attribute des Links selbst an. 
 
-### Dateiarten ###
+### 5.3 Dateiarten ###
 
 Reguläre Datei: Text-/Binärdateien in beliebigen Format  
 Verzeichnis: Datei mit Liste von Verzeichniseinträgen und zugehörigen I-node nummern  
@@ -771,7 +791,7 @@ Gerätedatei (special File): logische Beschriebungsdatei von physischem oder vir
 
 > Unterscheidung: Zeichenorientiertes Gerät (character Device), Blockorientiertes Gerät (block Device)
 
-FIFO (named Pipe): Werden zur Interprozesskommunikation verwendet. Können nur ein mal gelesen werden, keine Sprünge erlaubt  
+FIFO (named Pipe): Werden zur Interprozesskommunikation verwendet. Können nur einmal gelesen werden, keine Sprünge erlaubt  
 Sockets: Kommunikation über Netzwerk oder Lokal  
 Symbolische Links: Datei, die auf andere Datei zeigt
 
@@ -820,9 +840,175 @@ int main(int argc, char **argv)
 
 S_ID wird jediglich durch S_IF ersetzt
 
-### Dateisystemverlinkungen ###
+### 5.6 Dateisystemverlinkungen ###
+
+Es gibt zwei Arten von Verlinkungen: Hard Links und Soft Links (symbolische Links)
+
+Ein Harter Link ist ein weiterer Verzeichniseintrag, welcher auf dem selben i-Node der Datei zeigt.
+Ergo: Datei ist in verschiedenen Verzeichnissen eingetragen oder in einem Verzeichnis mehrfach mit unterschiedlichen Namen.
+Der Linkzähler des i-Node gibt an, wieviele Verzeichniseinträge zum jeweiligen i-Node existieren.
+Erst wenn der letzte Link auf diesem i-Node entfernt wird, kann die Datei gelöscht werden.
+
+Ein symbolischer Link ist dagegen eine spezielle Datei, mit Verweis auf das eigentliche Ziel, also eigener i-Node.
+Im Gegensatz zu Hardlinks, können Softlinks auch über Dateisystemgrenzen hinweg verknüpft werden.
+Außerdem ist es Softlinks erlaubt auf Verzeichnisse zu zeigen. Nachteil ist jedoch, dass beim löschen der Originaldatei ein symbolischer Link verweist.
+Richtet man die Dtaei später wieder ein, funktioniert alles wie zuvor.
+
+
+Unter Linux existiert keine Datei, die (nicht) irgendwie verlinkt ist.
+Verzeichnisbaum:
+    Wurzel      /
+	(root)    L bin
+		  L etc
+		  L ...
+		  L name
+		  L temp
+
+Das heißt, der i-Node, welcher zur Datei gehört, muss in mindestens einem Verzeichnis gelistet sein.
+Die Zuordnung des Dateinamen zu seiner i-Node Nummer geschieht beim Eintragen in ein Verzeichnis.
+Verzeichnis in Unix := Datei mit Namen und i-Node-Nummern. 
+Also: Eine i-Node-Nummer kann im Verzeichnissbaum gelinkt sein.
+Diese Links werden "Hard-Links" genannt.
+
+Harte Dateiverlinkungen können mit der Funktion link(...) erzeugt werden.
+
+```c
+#include <unistd.h>
+
+int link(const char* name, const char* linkname);
+```
+> Beide Angaben sind Pfadnamen
+> Die Verlinkung war Erfolgreich, wenn 0 zurückgeliefert wird. (Im Fehlerfall -1; z.b. Wenn Linkname bereits existiert oder Name keine gültige Datei ist)
+
+Harte Verlinkungen auf Verzeichnisse sind nicht erlaubt! (Wegen endloser Rekursion)
+
+Zum entfernen eines Links kann unlink(...) verwendet werden.
+```c
+#include <unistd.h>
+
+int unlink(const char* name);
+```
+> Entfent den Verzeichniseintrag (link) auf eine Datei i-Node
+> Wenn diese der letzte Link ist, wird danach der i-Node freigegeben
+> Liefert 0 bei Erfolg, sonst -1
+> Tritt ein Fehler auf, bleibt die Datei erhalten
+
+Wird eine Datei geschlossen (Filedeskriptor), so prüft der Kernel, ob diese Datei von anderen Prozessen noch geöffnet ist. Ist dies der Fall, so prüft der Kernel, ob der Linkzähler 0 erreicht hat.
+Sind Beide Bedingungen erfüllt, wird die Datei auch physisch gelöscht.
+Manche Programme machen sich dies zu nutze, in dem temporären Dateien, direkt nach dem Anlegen gelöscht werden. (Sind in Dateisystem unsichtbar)
+Der laufende Prozess hält sie weiterhin offen (Zum schreiben/lesen), damit wird sie physisch noch nicht gelöscht. Das geschieht erst, wenn sich der Prozess beendet (Und bei Absturz des Programms).
+
+Wird mittels unlink(...) ein symbolischer Link gelöscht, wird nur dieser Link entfernt. 
+Zum entfernen eines Verzeichnisses muss auf remove(...) oder rmdir(...) ausgewichen werden. (aus stdlib -c)
+Symbolische Links auf eine Datei oder ein Verzeichniss werden mit symlink(...) erzeigt.
+```c
+#include <unistd.h>
+
+int symlink(const char* ziel, const char* symlink);
+```
+> Rückgabe: 0 bei Erfolg, -1 bei Fehler.
+> Fehler, z.B.: Wenn Ziel und symlink den gleichen Namen tragen und in selben Verzeichnis sein sollen
+
+Beim Umgang mit symbolischen Links ist es vortheilhaft zu wissen, welche Systemfunktionen selbständig folgen und welche es nicht tun.
+Funktionen die diesen Links folgen (dereferenzieren) sind: access, chdir, chmod, chown, creut(?), exec, link, mkdir, mkfile (Akzeptieren: Pfad und ? bis zum i-Node), mkmod, open, opendir, pathcont, stat, trancate
+
+Funktionen die symbolischen Links verarbeiten sind: lchown, lstat, readlink, remove, rename, unlink
+Ausnahme: rmdir(...) liefert Fehler, falls Pfad ein symlink ist.
+
+Möchte man das Ziel eines symlink erfahren, kann readlink(...) verwendet werden.
+```c
+#include <unistd.h>
+
+int readlink(const char* symlink, char* puffer, int size);
+```
+> Liefert im Erfolgsfall die Anzahl gelesener Bytes.
+> Pfadname der Zieldatei oder -1 bei Fehlern.
+> Die in den Puffer geschriebene Zeichenakette wird nicht Nullterminiert
 
 ### Dateigröße ###
+struct stat -> st_size (Bytes) für reg.Dateien, Verzeichnisse und symlinks
+
+Blockgröße 512 oder 1024 Bytes
+st_blocksize = Blockgröße für E/A-Operationen
+st_blocks = Anzahl 512-Bytes-Blöcke
+
+Verzeichnisse haben gewöhnliche st_size wort als vielfaches von 16.
+Bei symlink ist st_size die Länge des Pfades auf der die Links verweist.
+Die Größe einer Datei kann geändert werden von truncate(...) oder ftruncate(...) geändert werden.
+
+```c
+#include <sys/types.h>
+#include <unistd.h>
+
+int truncate(const char* path, off_t length);
+int ftruncate(int fd, off_t length);
+```
+> Rückgabe: 0 bei Erfolg, -1 bei Fehlern
+> Normalerweise wird truncate zum Abschneiden benutzt, also Dateigröße reduzieren/Datei leeren.
+> Es besteht aber auch die Möglichkeit eine Datei virtuell zu vergrößern. Das kann Sinnvoll sein, wenn man z.B. für einen bevorstehenden Download Plattenplatz reservieren möchte. 
+> Beim vergrößern können Löcher entstehen, dessen Bytes beim Auslesen den Wert 0 haben.
+
+### Zeiten einer Datei ###
+
+| st_mtime  | modification    |
+| st_atime  | access          |
+| st_ctime  | change (i-Node) |
+> Diese Zeiten sind auch unter der Bezeichnung MAC-time bekannt und werden in Computerforensik verwendet.
+
+Diese Zeiten lassen sich nachträglich ändern. Mit folgenden Funkltionen:
+- utime(...)
+- utimes(...)
+
+```c
+#include <sys/types.h>
+#include <utime>
+
+int utime(const char* path, const struct utimebuf* tm);
+struct utimebuf{
+		time_t actime;  // accesstime
+		time_t modtime; // modification
+		}
+```
+
+Jedes mal, wenn utime mit null aufgerufen wird, wird st_ctime automatisch auf die aktuelle Systemzeit gesetzt.
+Die Werte actime und modtime sind Unix zeitstempel (also Sekunden seit dem 01.01.1970 01:00 CET (00:00 UTC))
+
+Benötigte Berechtigung:
+Effektive UID des Prozesses muss Besitzer sein oder Prozess wird als root ausgeführt.
+Wir utime() mit nicht initialisierten Wert aufgerufen, werden die Zeitstempel auf die aktuelle Systemzeit gesetzt.
+
+```c
+#include <sys/types.h>
+#include <utime>
+
+int utimes(const char* path, const struct timeval tm[2]);
+struct timeval{
+		long tv_sec;  // second
+		long tv_usec; // microseconds
+		}
+```
+
+### Verzeichnisse ###
+
+Anlegen eines neuen Ordners:
+```c
+#include <sys/types.h>
+#include <sys/stat.h>
+
+int mkdir (const char* path, mode_t mode);
+```
+> Liefert 0 bei Erfolg, -1 bei Fehler.
+> Beachte Ordner sollten zusätzlich Ausführrecht gewähren, um Zugriff auf darin befindliche Dateien zu erhalten.
+
+Löschen eines leeren Verzeichnis:
+```c
+#include <sys/types.h>
+#include <sys/stat.h>
+
+int rmdir (const char* path);
+```
+> Liefert 0 bei Erfolg, -1 bei Fehler.
+
 
 ### Lesen von Verzeichnissen ###
 
@@ -845,7 +1031,7 @@ Mit rewinddir(...) wird der ELsezeiger wieder auf Anfang der Namensliste gesetzt
 
 Die rekursive Verarbeitung von Verzeichnisbäumen wird zusätzlich durch 2 Funktionen ftw (file traverse walk) und nftw (new file traverse walk) unterstützt.
 
-Diese akzeotiueren eine callback-Benutzer-Funktion, welche für jeden Verzeichniseintrag aufgerufen wird.
+Diese akzeptieren eine callback-Benutzer-Funktion, welche für jeden Verzeichniseintrag aufgerufen wird.
 
 Unterschied: Behandlung Symbolischer Links
 
@@ -857,8 +1043,8 @@ nftw: optional, kann eingestellt werden
 
 int ftw(const char *dirpath, int (*fn) (const char *path, const struct stat *sb, int type flags), int nopenfd);
 ```
-
-Der Rückgabewert von ftw ist der Rückgabewert der übergebenen Funktion.
+> Der Rückgabewert von ftw ist der Rückgabewert der übergebenen Funktion.
+> Liefert die übergebene Funktionenen einen Wert verschieden von 0, so bricht ftw ab.
 
 ```c
 #define _XOPEN_SOURCE 600
@@ -986,12 +1172,11 @@ Major Number legt Gerätetyp fest, während Minor-Number dem pasenden Treiebr ü
 #include <unistd.h>
 
 void sync(void);
-
 int fsync(int fd);
 
 ```
+> fsync liefert bei Erfolg 0, sonst -1  
 
-fsync liefert bei Erfolg 0, sonst -1  
 Beide veranlassen den Kernel gepufferte Daten physisch zu schreiben
 Sync trägt bei Kernel ein, dass alle geöffneten Dateien zu schreiben sind und kehrt sofort zurück  
 Dem gegenüber bezieht sich fsync(...) nur auf eine Datei und veranlasst auch nur das Schreiben dieser. fsync kehrt erst zurück, wenn physikalischer schreibprozess abgeschlossen.

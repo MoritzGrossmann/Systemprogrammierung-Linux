@@ -51,9 +51,12 @@
             - [Beenden ohne Aufräumen](#beenden-ohne-aufr%C3%A4umen)
             - [Zusätzliches Aufräumen](#zus%C3%A4tzliches-aufr%C3%A4umen)
         - [7.3 Umgebungsvariablen](#73-umgebungsvariablen)
+            - [Abfragen einzelner Umgebungsvariablen](#abfragen-einzelner-umgebungsvariablen)
+            - [Verändern von Umgebungsvariablen](#ver%C3%A4ndern-von-umgebungsvariablen)
             - [Speicherstruktur eines Prozesses](#speicherstruktur-eines-prozesses)
         - [7.4 Dynamisches Anfordern von Speicher](#74-dynamisches-anfordern-von-speicher)
             - [Freigabe dynamisch angeforderten Speicherplatzes](#freigabe-dynamisch-angeforderten-speicherplatzes)
+            - [Anfordern von Speicherplatz im Stack](#anfordern-von-speicherplatz-im-stack)
         - [7.5 Ressourcenbeschränkungen](#75-ressourcenbeschr%C3%A4nkungen)
             - [Einige Limits und deren Bedeutung](#einige-limits-und-deren-bedeutung)
             - [Beispiel](#beispiel)
@@ -71,6 +74,10 @@
         - [7.10 Synchronisation](#710-synchronisation)
         - [7.11 Systemruf exec](#711-systemruf-exec)
             - [Vererbung bei exec](#vererbung-bei-exec)
+        - [7.12 Die Funktion system](#712-die-funktion-system)
+        - [7.13 Verändern von User ID und Group ID](#713-ver%C3%A4ndern-von-user-id-und-group-id)
+            - [User-ID und Group-ID für Dateisystemzugriffe](#user-id-und-group-id-f%C3%BCr-dateisystemzugriffe)
+    - [8. Signale](#8-signale)
         - [8.1 Einrichten von Signalhandlern](#81-einrichten-von-signalhandlern)
         - [8.2 Kindprozesse und Signale](#82-kindprozesse-und-signale)
         - [8.3 Signalnummer](#83-signalnummer)
@@ -397,7 +404,7 @@ Optional lassen sich bitweise Oder verknüpfen
 ```c
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <fctnl.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -1327,7 +1334,7 @@ extern char **environ;
 ```
 kann auf die Umgebungsvariablen zugegriffen werden. Die Variablenbelegung sind Strings der Form name=Wert.
 
-####Abfragen einzelner Umgebungsvariablen####
+#### Abfragen einzelner Umgebungsvariablen ####
 ```c
 #include <stdlib.h>
 	char * getenv(const char *name);
@@ -1335,7 +1342,7 @@ kann auf die Umgebungsvariablen zugegriffen werden. Die Variablenbelegung sind S
 Liefert Null, falls name nicht in Environment vorhanden, ansonsten einen Zeiger auf den Anfang von Wert (name = wert)
 Bem.: Sollte möglichst nicht verändert werden, da weitere Aufrufe von getenv den selben Zeiger liefern.
 
-####Verändern von Umgebungsvariablen####
+#### Verändern von Umgebungsvariablen ####
 
 ```c
 #include <stdlib.h>
@@ -1366,7 +1373,7 @@ Im Unterschied zu malloc(…) belegt calloc(…) den Speicher mit Nullen.
 Verkleinern oder vergrößern kann realloc(…).
 => Der Speicherbereich ist in jedem Fall zusammenhängend (verantwortlich ist die MemoryManagementUnit)
 
-####	Freigabe dynamisch angeforderten Speicherplatzes####
+#### Freigabe dynamisch angeforderten Speicherplatzes ####
 
 ```c
 #include <stdlib.h>
@@ -1380,7 +1387,7 @@ Gemäß C-Standard sind folgende Aufrufe identisch:
 
 Ein Aufruf von free(NULL) ist wirkungslos.
 
-####Anfordern von Speicherplatz im Stack####
+#### Anfordern von Speicherplatz im Stack ####
 ```c
 #include <stdlib.h>
 	void* alloca(size_t size);
@@ -1771,7 +1778,7 @@ int execve(const char *pfad, char* const argv[], char* const envp[]);
 #### Vererbung bei exec ####
 Das neue Programme behält vom bisherigen Prozess alle verfügbaren Parameter und Einstellung. Das Schließen von geöffneten Dateien hängt vom close-on-exec-Flag ab. (Voreinstellung: AUS). Die effektive UID und GID werden nur beibehalten, falls das neue Programm das Set-UID oder Set-GID Flag nicht gesetzt hat.
 
-###7.12 Die Funktion system###
+### 7.12 Die Funktion system ###
 ```c
 #include <stdlib.h>
 	int system(const char *Kommandozeile);
@@ -1786,7 +1793,7 @@ Der Rückgabewert ist -1 im Fehlerfall, ansonsten wird der wait()-Status des aus
 
 >**Bem.:** Konnte die Shell (/bin/sh) nicht ausgeführt werden, liefert system den Status exit(127), übergibt man an system(…) einen NULL-Zeiger, kann getestet werden, ob eine Shell verfügbar ist. Der Rückgabewert ist ungleich 0, wenn Shell verfügbar, sonst 0.
 
-###7.13 Verändern von User ID und Group ID###
+### 7.13 Verändern von User ID und Group ID ###
 
 ```c
 #include <sys/types.h>
@@ -1807,13 +1814,13 @@ Die erfolgreiche Ausführung hängt von zu beachtenden Regeln ab.
 Sofern ein Prozess Superuser-Rechte besitzt, werden mit setuid(…) und setreuid(…) stets reale und effektive UserID gesetzt, mit setuid(…) ändert sich nur die effektive UID.
 Besitzt der Prozess keine root-Rechte, ist also nicht privilegiert, darf ein Prozess seine reale und effektive UID immer nur vertauschen, gleiches gilt für die GID.
 
-####User-ID und Group-ID für Dateisystemzugriffe####
+#### User-ID und Group-ID für Dateisystemzugriffe ####
 
 Sofern ein Prozess Superuser-Rechte besitzt, werden mit setuid(…) und setreuid(…) stets reale und effektive UserID gesetzt, mit setuid(…) ändert sich nur die effektive UID.
 
 Besitzt der Prozess keine root-Rechte, ist also nicht privilegiert, darf ein Prozess seine reale und effektive UID immer nur vertauschen, gleiches gilt für die GID.
 
-##8. Signale##
+## 8. Signale ##
 
 Signale unter Unix sind sogenannte Software-Interrupts (soft-IRQ bzw. Signale), die im Kernel erzeugt und an Prozesse weitergeleitet werden.
 Quellen für Signale können die Hardware (Interrupts) oder Software gesteuerte Ereignisse (Aufruf einer Systemfunktion, Druck einer bestimmten Taste, Senden eines bestimmten Signals)  sein. Das unter Unix angewandte Signalkonzept bedient sich dabei asynchroner Ereignisse (Signals), verschiedener Event-Handler (Signal-handler) und entsprechender Warteschlangen.

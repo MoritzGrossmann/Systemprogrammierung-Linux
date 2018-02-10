@@ -1,26 +1,70 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <unistd.h>
+
+
+struct myparam {
+	unsigned int u:1, o:1, p:1;
+	unsigned int min, max, precision;
+};
+
+void printSqrt(int num, int precision)
+{
+	printf("%d\tSquareroot: %.*f\n", num, precision, sqrt((float)num));
+}
 
 int main (int argc, char **args) {
-	if (argc != 4){ 
-		printf("Wurzel muss aufgerufen werden mit den parametern min max precision!!\n");
-		return 1; 
-	}
-	
-	int precision = atoi(args[1]);
-	int min = atoi(args[2]);
-	int max = atoi(args[3]);
 
-	if (min > max) {
-		printf("Minimum muss größer sein als Maximunm!!\n");
-		return 1;
+	struct myparam params = {0,0,0,1,100, 5};
+
+	char c = 0;
+
+	while((c = getopt(argc, args, "o:u:p")) != -1)
+	{
+		switch(c)
+		{
+			case 'o':
+				params.o = 1;
+				if(optarg) params.max = atoi(optarg);
+				break; 
+			case 'u':
+				params.u = 1;
+				if (optarg) params.min = atoi(optarg);
+			case 'p':
+				params.p = 1;
+				if (optarg) params.precision = atoi(optarg);
+			default:
+				error (0,0, "[-u <min>, -o <max>, -p <precisio>]");
+		}
 	}
 
-	for (int i = min; i < max; i++) {
-		printf("%d \t %.*f\n", i, precision, sqrt((float)i));
+	if (params.o ^ params.u)
+	{
+		error (0,0, "[-u <min>, -o <max>, -p <precision>]");
+		return EXIT_FAILURE;
 	}
 
-	return 0;
+	if (params.u == 0 && params.o == 0)
+	{
+		printf("no Interval is given. Calculate standard Interval [1,100]\n");
+	}
+
+	if (params.p == 0)
+	{
+		printf("No precision is given. Calculate with standard precision 5\n");
+	}
+
+	if (params.min > params.max) {
+		int tmp = params.max;
+		params.max = params.min;
+		params.min = tmp;
+	}
+
+	for (int i = params.min; i < params.max; i++) {
+		printSqrt(i, params.precision);
+	}
+
+	return EXIT_SUCCESS;
 
 }

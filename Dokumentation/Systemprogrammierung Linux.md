@@ -380,7 +380,7 @@ Optional lassen sich bitweise Oder verknüpfen
 | Flag     | Beschreibung                                                            | Oktal |
 | -------- | ----------------------------------------------------------------------- | ----- |
 | O_NOCTTY | falls ein Terminal geöffnet wird, soll es nicht Kontrollterminal werden |
-| O_CREAT  | Wird das dritte Argument mode (Zugriffsmodi) benötigt					 |
+| O_CREAT  | Wird das dritte Argument mode (Zugriffsmodi) benötigt                   |
 | S_ISUID  | set User-Id Bit                                                         |
 | S_ISGID  | set Group-Id Bit                                                        |
 | S_ISVTX  | sticky Bit (saved Text)                                                 |
@@ -524,7 +524,7 @@ off_t lseek(int fd, off_t offset, int woher);
 
 | Parameter | Erklärung                                                                                               |
 | --------- | ------------------------------------------------------------------------------------------------------- |
-| offset    | Legt die Byteanzahl fest, um die verschoben werden soll                                                  |
+| offset    | Legt die Byteanzahl fest, um die verschoben werden soll                                                 |
 | woher     | Legt fest, von wo die Verschiebung statt findet, also Richtung. Dafür kennt l_seek 3 verschiedene Werte |
   
 
@@ -698,23 +698,23 @@ F_SETLK
 F_GETLK  
 F_SETLKW
 
-| Flag             | Beschreibung                                                            |
-| ---------------- | ----------------------------------------------------------------------- |
-| F_DUPFD          | Duplizieren eines Filedeskriptors: Das dritte Argument ist zur          |
-| F_DUPFD_CLOEXEC  | vorhandener Filedeskriptor, bei 0 wird nächste Wer verwendet			 |
-|
-| F_SETFD          | Abfrage und setzen der FD-Flags                                         |
-| F_GETFD          | (akt. einziges Flag: FD_CLOEXEC)                                        |
-|
-| F_SETFL          | Abfrage und setzen des Statusflags                                      |
-| F_GETFL          | Bsp.: O_RDONLY, O_APPEND                                                |
-|
-| F_SETOWN         | Abfrage und setzen von PID/PGID des Prozesses                           |
-| F_GETOWN         | der SIGIO und SIGUNG(? ob richtig?)                                     |
-|
-| F_SETLK          | Abfrage und setzen von                                                  |
-| F_GETLK          | record / locks                                                          |
-| F_SETLKW         |                                                                         |
+| Flag            | Beschreibung                                                   |
+| --------------- | -------------------------------------------------------------- |
+| F_DUPFD         | Duplizieren eines Filedeskriptors: Das dritte Argument ist zur |
+| F_DUPFD_CLOEXEC | vorhandener Filedeskriptor, bei 0 wird nächste Wer verwendet   |
+|                 |
+| F_SETFD         | Abfrage und setzen der FD-Flags                                |
+| F_GETFD         | (akt. einziges Flag: FD_CLOEXEC)                               |
+|                 |
+| F_SETFL         | Abfrage und setzen des Statusflags                             |
+| F_GETFL         | Bsp.: O_RDONLY, O_APPEND                                       |
+|                 |
+| F_SETOWN        | Abfrage und setzen von PID/PGID des Prozesses                  |
+| F_GETOWN        | der SIGIO und SIGUNG(? ob richtig?)                            |
+|                 |
+| F_SETLK         | Abfrage und setzen von                                         |
+| F_GETLK         | record / locks                                                 |
+| F_SETLKW        |                                                                |
 
 
 ### 4.5 Filezeiger ###
@@ -860,10 +860,10 @@ S_ID wird jediglich durch S_IF ersetzt
 - Gruppe
 - Andere
 
-| Typ    | Typ    | Typ    |
-| ------ | ------ | ------ |
-| E-R    | G-R    | O-3    |
-| rwx    | rwx    | rwx    |
+| Typ | Typ | Typ |
+| --- | --- | --- |
+| E-R | G-R | O-3 |
+| rwx | rwx | rwx |
 
 - x = 1
 - w = 2
@@ -1036,11 +1036,11 @@ int ftruncate(int fd, off_t length);
 
 ### 5.8 Zeiten einer Datei ###
 
-| Time      | Use             |
-| --------- | --------------- |
-| st_mtime  | modification    |
-| st_atime  | access          |
-| st_ctime  | change (i-Node) |
+| Time     | Use             |
+| -------- | --------------- |
+| st_mtime | modification    |
+| st_atime | access          |
+| st_ctime | change (i-Node) |
 > Diese Zeiten sind auch unter der Bezeichnung MAC-time bekannt und werden in Computerforensik verwendet.
 
 Diese Zeiten lassen sich nachträglich ändern. Mit folgenden Funkltionen:
@@ -1859,6 +1859,7 @@ Die Nummer 0 ist nicht vergeben, wird von der Funktion kill(…) als spezieller 
 
 > kill -l
 
+| Signal           | Erklärung                                                |
 | ---------------- | -------------------------------------------------------- |
 | SIGABRT          | abort -> Beenden mit core-Datei                          |
 | SIGALRM          | timer abgelaufen -> Beenden                              |
@@ -1875,7 +1876,6 @@ Die Nummer 0 ist nicht vergeben, wird von der Funktion kill(…) als spezieller 
 | SIGSTOP          | Prozess anhalten im Terminal mit [STRG] + Z -> Anhalten  |
 | SIGTERM          | Beendigung -> Beenden                                    |
 | SIGUSR1, SIGUSR2 | benutzerdefiniertes Signal -> Beenden                    |
-|----------------- | -------------------------------------------------------- |
 
 
 ### 8.4 Das neue Signalkonzept ###
@@ -1951,7 +1951,7 @@ Optionen:
 | SA_NOCLOSTOP | Signal SIGCHILD. wird nur ausgelößt, wenn sich Kindprozess beendet, nicht jedoch bei STOP                                                                                                |
 | SA_NOCLDWAIT | Signal SIGCHILD. vermeidet Zombies. Ruft Elternprozess danach wait(..) auf, kehrt es erst zurück, wenn alle Kinder beendet sind                                                          |
 | SA_RESTART   | Blockierende Systemaufrufe, die durch ein auftretendes Signal unterbrochen wurden, werden automatisch neu gestartet. Ist sas Flag nicht gesetzt, schlägt der Systemaufruf mit EINTR Fehl |
-| SA_NODEFER   | Während der Ausführung eines Handlers wird das selbe Signal nicht automatisch blockiert                                                                                         |
+| SA_NODEFER   | Während der Ausführung eines Handlers wird das selbe Signal nicht automatisch blockiert                                                                                                  |
 | SA_RESETHAND | Bei Eintritt in die Routine wird der Defaulthandler wieder eingestellt                                                                                                                   |
 
 **Synonyme unter Linux**
